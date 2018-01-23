@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rlSearch"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/comfortaa_light"
+                android:textSize="@dimen/text_16s"
+                android:hint="@string/prompt_search"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionSearch"
+                android:inputType="textEmailAddress"
+
+                android:singleLine="true"
+                android:textColor="@color/clr_txt_black" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+
+    </RelativeLayout>
+
+    <com.cjj.MaterialRefreshLayout
+        android:layout_below="@+id/rlSearch"
+        android:id="@+id/materialRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.cjj.MaterialRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/llNodata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:minHeight="100dp"
+        android:visibility="gone">
+
+        <include
+            layout="@layout/view_norecord_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
+
+
+</RelativeLayout>
+
+
+

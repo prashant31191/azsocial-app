@@ -1,7 +1,15 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="AppTheme.Base">
 
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme2" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -24,5 +32,112 @@
         <item name="tabMode">fixed</item>
 
     </style>
+
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+
+
+
+
+
+    <!--for the text views-->
+    <style name="_AZ.TextView.Black" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/clr_txt_black</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/merienda_one</item>
+    </style>
+    <style name="_AZ.TextView.Red" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/clrRed</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/merienda_one</item>
+    </style>
+    <style name="_AZ.TextView.Gray" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/clr_txt_detail_gray</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/merienda_one</item>
+    </style>
+
+    <!--comfortaa_light-->
+    <style name="_AZ.TextView.Black.Font2" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/clr_txt_black</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/comfortaa_light</item>
+    </style>
+    <style name="_AZ.TextView.Red.Font2" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/clrRed</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/comfortaa_light</item>
+    </style>
+    <style name="_AZ.TextView.Gray.Font2" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/clr_txt_detail_gray</item>
+        <item name="android:fontFamily" tools:ignore="NewApi">@font/comfortaa_light</item>
+    </style>
+
+
+<!--Black-->
+    <style name="_AZ.TextView.Black.S" parent="_AZ.TextView.Black">
+        <item name="android:textSize">@dimen/text_12s</item>
+    </style>
+    <style name="_AZ.TextView.Black.M" parent="_AZ.TextView.Black">
+        <item name="android:textSize">@dimen/text_14s</item>
+    </style>
+    <style name="_AZ.TextView.Black.L" parent="_AZ.TextView.Black">
+        <item name="android:textSize">@dimen/text_18s</item>
+    </style>
+    <style name="_AZ.TextView.Black.XL" parent="_AZ.TextView.Black">
+        <item name="android:textSize">@dimen/text_20s</item>
+    </style>
+
+
+    <style name="_AZ.TextView.Black.Font2.M" parent="_AZ.TextView.Black.Font2">
+        <item name="android:textSize">@dimen/text_14s</item>
+    </style>
+    <style name="_AZ.TextView.Black.Font2.L" parent="_AZ.TextView.Black.Font2">
+        <item name="android:textSize">@dimen/text_18s</item>
+    </style>
+
+
+    <!--Red-->
+    <style name="_AZ.TextView.Red.S" parent="_AZ.TextView.Red">
+        <item name="android:textSize">@dimen/text_12s</item>
+    </style>
+    <style name="_AZ.TextView.Red.M" parent="_AZ.TextView.Red">
+        <item name="android:textSize">@dimen/text_14s</item>
+    </style>
+    <style name="_AZ.TextView.Red.L" parent="_AZ.TextView.Red">
+        <item name="android:textSize">@dimen/text_18s</item>
+    </style>
+    <style name="_AZ.TextView.Red.XL" parent="_AZ.TextView.Red">
+        <item name="android:textSize">@dimen/text_20s</item>
+    </style>
+
+    <style name="_AZ.TextView.Red.Font2.M" parent="_AZ.TextView.Red.Font2">
+        <item name="android:textSize">@dimen/text_14s</item>
+    </style>
+    <style name="_AZ.TextView.Red.Font2.L" parent="_AZ.TextView.Red.Font2">
+        <item name="android:textSize">@dimen/text_18s</item>
+    </style>
+
+    <!--Gray-->
+    <style name="_AZ.TextView.Gray.S" parent="_AZ.TextView.Gray">
+        <item name="android:textSize">@dimen/text_12s</item>
+    </style>
+    <style name="_AZ.TextView.Gray.M" parent="_AZ.TextView.Gray">
+        <item name="android:textSize">@dimen/text_14s</item>
+    </style>
+    <style name="_AZ.TextView.Gray.L" parent="_AZ.TextView.Gray">
+        <item name="android:textSize">@dimen/text_18s</item>
+    </style>
+    <style name="_AZ.TextView.Gray.XL" parent="_AZ.TextView.Gray">
+        <item name="android:textSize">@dimen/text_20s</item>
+    </style>
+
+    <style name="_AZ.TextView.Gray.Font2.M" parent="_AZ.TextView.Gray.Font2">
+        <item name="android:textSize">@dimen/text_14s</item>
+    </style>
+    <style name="_AZ.TextView.Gray.Font2.L" parent="_AZ.TextView.Gray.Font2">
+        <item name="android:textSize">@dimen/text_18s</item>
+    </style>
+
+
 
 </resources>

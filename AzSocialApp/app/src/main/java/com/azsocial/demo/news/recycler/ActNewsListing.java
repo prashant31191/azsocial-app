@@ -1,18 +1,16 @@
-package com.azsocial.fragments;
+package com.azsocial.demo.news.recycler;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -21,14 +19,11 @@ import android.widget.TextView;
 
 import com.azsocial.App;
 import com.azsocial.R;
-import com.azsocial.activities.MainActivity;
-import com.azsocial.demo.news.recycler.ActNewsDetail;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
-import com.azsocial.demo.news.recycler.newsapi.NewsChannelsResponse;
+import com.azsocial.demo.news.recycler.newsapi.NewsHeadlinesResponse;
 import com.azsocial.utils.AppFlags;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.flurry.android.ads.FlurryAdInterstitial;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
@@ -45,12 +40,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-
-public class HomeFragment extends BaseFragment {
-
-
-    @BindView(R.id.btn_click_me)
-    Button btnClickMe;
+public class ActNewsListing extends AppCompatActivity {
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -74,97 +64,41 @@ public class HomeFragment extends BaseFragment {
 
     String strFrom = "", strData = "", category_id = "";
     int page = 1;
-    FlurryAdInterstitial mFlurryAdInterstitial;
-
-
-
-    int fragCount;
-Activity mActivity ;
-
-    public static HomeFragment newInstance(int instance) {
-        Bundle args = new Bundle();
-        args.putInt(ARGS_INSTANCE, instance);
-        HomeFragment fragment = new HomeFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-
-    public HomeFragment() {
-        // Required empty public constructor
-    }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setHasOptionsMenu(true);
+        setContentView(R.layout.act_news_listing);
+        ButterKnife.bind(this);
+        getIntentData();
+        initialization();
+        asyncGetNewsList();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
-        mActivity = getActivity();
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        ButterKnife.bind(this, view);
-
-        Bundle args = getArguments();
-        if (args != null) {
-            fragCount = args.getInt(ARGS_INSTANCE);
-        }
-
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
-        btnClickMe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(HomeFragment.newInstance(fragCount + 1));
-
-                }
+    private void getIntentData() {
+        Bundle bundle;
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            bundle = getIntent().getExtras();
+            if (bundle.getString(AppFlags.tagFrom) != null) {
+                strFrom = bundle.getString(AppFlags.tagFrom);
             }
-        });
 
 
-        ( (MainActivity)getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home "+fragCount);
+            if (bundle.getString(AppFlags.tagData) != null) {
+                strData = bundle.getString(AppFlags.tagData);
+            }
 
-
-         /*  initialization();
-          asyncGetNewsList();*/
-
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (dataListAdapter == null) {
-            page = 1;
-            arrayListArticlesModel = new ArrayList<>();
-
-            initialization();
-            asyncGetNewsList();
+            if (bundle.getString(AppFlags.tagCatId) != null) {
+                category_id = bundle.getString(AppFlags.tagCatId);
+            }
         }
+
+        App.showLog("====strFrom===" + strFrom);
+        App.showLog("===strData====" + strData);
+        App.showLog("===category_id====" + category_id);
+
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
-
-
-
-
 
     private void initialization() {
         try {
@@ -179,7 +113,6 @@ Activity mActivity ;
                 @Override
                 public void onRefresh(final MaterialRefreshLayout materialRefreshLayout) {
                     try {
-                        page = 1;
                         arrayListArticlesModel = new ArrayList<>();
                         asyncGetNewsList();
 
@@ -191,11 +124,10 @@ Activity mActivity ;
                 @Override
                 public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
                     try {
-                        //materialRefreshLayout.setLoadMore(false);
-                        //App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-
+                       /* materialRefreshLayout.setLoadMore(false);
+                        App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
+*/
                         asyncGetNewsList();
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -203,7 +135,7 @@ Activity mActivity ;
             });
 
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
             //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
             recyclerView.setLayoutManager(linearLayoutManager);
             //recyclerView.setHasFixedSize(true);
@@ -221,7 +153,7 @@ Activity mActivity ;
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/sources?apiKey=462f5f3ede2841408e9ef575919befe5&page="+page;
+            String url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=462f5f3ede2841408e9ef575919befe5&page="+page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -230,7 +162,7 @@ Activity mActivity ;
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
-                    mActivity.runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -249,7 +181,7 @@ Activity mActivity ;
                 public void onResponse(Call call,final Response response) throws IOException {
                     final ResponseBody responseBody = response.body();
 
-                    mActivity.runOnUiThread(new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
@@ -264,7 +196,7 @@ Activity mActivity ;
                                     App.showLog("==result==" + result.toString());
 
                                     Gson gson = new GsonBuilder().create();
-                                    NewsChannelsResponse newsHeadlinesResponse = gson.fromJson(result.toString(), NewsChannelsResponse.class);
+                                    NewsHeadlinesResponse newsHeadlinesResponse = gson.fromJson(result.toString(), NewsHeadlinesResponse.class);
                                     App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
                                     if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
                                         //arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
@@ -275,6 +207,7 @@ Activity mActivity ;
                                         {
                                             arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
                                         }
+
                                         page = page + 1;
                                         setStaticData();
                                     }
@@ -312,10 +245,10 @@ Activity mActivity ;
             if (arrayListArticlesModel != null && arrayListArticlesModel.size() > 0) {
 
                 llNodata.setVisibility(View.GONE);
-                App.showLog("======set adapter=DataListAdapter==page="+page);
+                App.showLog("======set adapter=DataListAdapter===");
 
-                if (dataListAdapter == null || page <=2 ) {
-                    dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
+                if (dataListAdapter == null) {
+                    dataListAdapter = new DataListAdapter(ActNewsListing.this, arrayListArticlesModel);
                     recyclerView.setAdapter(dataListAdapter);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
                 } else {
@@ -357,11 +290,11 @@ Activity mActivity ;
             try {
                 ArticlesModel mPEArticleModel = mArrListmPEArticleModel.get(i);
 
-                versionViewHolder.tvTitle.setText(mPEArticleModel.name);
-                versionViewHolder.tvDate.setText(mPEArticleModel.country);
-                versionViewHolder.tvTime.setText(mPEArticleModel.language);
+                versionViewHolder.tvTitle.setText(mPEArticleModel.title);
+                versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
+                versionViewHolder.tvTime.setText(mPEArticleModel.author);
 
-                versionViewHolder.tvDetail.setText(mPEArticleModel.id + "\n "+mPEArticleModel.category);
+                versionViewHolder.tvDetail.setText(mPEArticleModel.description);
 
                 if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
                     versionViewHolder.ivPhoto.setVisibility(View.VISIBLE);
@@ -377,7 +310,7 @@ Activity mActivity ;
                 } else {
                     versionViewHolder.ivPhoto.setVisibility(View.GONE);
                 }
-                if (mPEArticleModel.name.equalsIgnoreCase("1")) {
+                if (mPEArticleModel.title.equalsIgnoreCase("1")) {
                     versionViewHolder.ivFavourite.setSelected(true);
                 } else {
                     versionViewHolder.ivFavourite.setSelected(false);
@@ -387,13 +320,13 @@ Activity mActivity ;
                 versionViewHolder.ivFavourite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (mArrListmPEArticleModel.get(i).name.equalsIgnoreCase("1")) {
-                            mArrListmPEArticleModel.get(i).name = "0";
-                            if (mArrListmPEArticleModel.get(i) != null && mArrListmPEArticleModel.get(i).name != null) {
+                        if (mArrListmPEArticleModel.get(i).title.equalsIgnoreCase("1")) {
+                            mArrListmPEArticleModel.get(i).title = "0";
+                            if (mArrListmPEArticleModel.get(i) != null && mArrListmPEArticleModel.get(i).title != null) {
 
                             }
                         } else {
-                            mArrListmPEArticleModel.get(i).name = "1";
+                            mArrListmPEArticleModel.get(i).title = "1";
                         }
 
                         dataListAdapter.notifyDataSetChanged();
@@ -403,18 +336,9 @@ Activity mActivity ;
                 versionViewHolder.rlMain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                      /*
-                        Intent intent= new Intent(mActivity,ActNewsDetail.class);
+                        Intent intent= new Intent(ActNewsListing.this,ActNewsDetail.class);
                         intent.putExtra(AppFlags.tagArticlesModel,mArrListmPEArticleModel.get(i));
-                        mActivity.startActivity(intent);
-                        */
-
-                        if (mFragmentNavigation != null) {
-                            mFragmentNavigation.pushFragment(HomeFragment.newInstance(fragCount + 1));
-
-                        }
-
+                        startActivity(intent);
                     }
                 });
 

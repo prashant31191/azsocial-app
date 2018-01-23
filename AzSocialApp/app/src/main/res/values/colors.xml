@@ -5,6 +5,21 @@
     <color name="colorAccent">#FF4081</color>
 
 
+
+    <color name="clrRed">#F44336</color>
+    <color name="purple">#9C27B0</color>
+    <color name="LightBlue">#03A9F4</color>
+    <color name="Lime">#CDDC39</color>
+
+    <color name="clr_txt_black">#111111</color>
+    <color name="clr_txt_black3">#333333</color>
+    <color name="clr_txt_black5">#555555</color>
+    <color name="clr_txt_black_light">#666666</color>
+
+    <color name="clr_txt_detail_gray">#aaaaaa</color>
+    <color name="clr_divider">#eeeeee</color>
+
+
     <color name="yellow">#F6A623</color>
 
     <color name="violet">#673AB7</color>

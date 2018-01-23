@@ -1,15 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.0"
     defaultConfig {
         applicationId "com.azsocial"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Enabling multidex support.
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -21,8 +24,8 @@ android {
 
 
 ext {
-    supportLibraryVersion = '25.2.0'
-    butterknifeVersion = "8.5.1"
+    supportLibraryVersion = '27.0.0'
+    butterknifeVersion = '8.5.1'
 
 }
 
@@ -31,10 +34,41 @@ ext {
 dependencies {
 
 
-    compile "com.jakewharton:butterknife:$butterknifeVersion"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
 
     compile "com.android.support:appcompat-v7:$supportLibraryVersion"
     compile "com.android.support:design:$supportLibraryVersion"
     compile "com.android.support:support-v4:$supportLibraryVersion"
+
+
+
+    // for the api call
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+
+    //for the constraint layout
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    // for the response casting using GSON
+    implementation 'com.google.code.gson:gson:2.8.2'
+    // for the image loading
+    compile 'com.squareup.picasso:picasso:2.5.2'
+
+    // pull down reload data
+    // MaterialRefreshLayout v1.3.0
+    implementation 'com.cjj.materialrefeshlayout:library:1.3.0'
+
+
+    // for the butter knife  find id and click
+    compile "com.jakewharton:butterknife:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
+    // Required for Flurry Analytics integration
+    compile 'com.flurry.android:analytics:8.2.0'
+    // Optional - If you want to use the Ads SDK
+    compile 'com.flurry.android:ads:8.2.0'
+    compile 'com.google.android.gms:play-services-basement:11.8.0'
+
+
+    // multi dex error resolve
+    compile 'com.android.support:multidex:1.0.2'
 }
+

@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">InstaLikeFragmentTransaction</string>
+    <string name="app_name">AzNewsReader</string>
+    <string name="google_api_key">AIzaSyDyNL7PBz6c8fpCA4yN-3oSBUgbXl6wXlo</string>
+    <string name="mesibo_app_token">4yivu175kyuxnjvgckii6rflmxzlo734d2c8fomiez9mt2m1d83q8ekxb3n8chal</string>
+    <string name="mesibo_api_token">lejgxqleb2dyz7h0xdsngllhej2b4bxu51szbfu5w2jgzdi5qt623xb01xmd80gs</string>
 
     <array name="tab_name">
         <item>Home</item>
@@ -9,5 +12,20 @@
         <item>Profile</item>
     </array>
 
+
+
+    <!-- Strings related to login -->
+    <string name="prompt_search">search here</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."
+    </string>
+    <string name="strNetError">No internet connection</string>
 
 </resources>
