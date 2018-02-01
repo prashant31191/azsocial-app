@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AzSocialApp.iml" filepath="$PROJECT_DIR$/AzSocialApp.iml" />
-      <module fileurl="file://D:\Prashant\Github_Demo\azsocial-app\AzSocialApp\InstaLikeFragmentTransaction.iml" filepath="D:\Prashant\Github_Demo\azsocial-app\AzSocialApp\InstaLikeFragmentTransaction.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

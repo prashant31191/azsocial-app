@@ -22,7 +22,9 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.azsocial.demo.alarm.AlarmManagerBroadcastReceiver;
 import com.azsocial.utils.AdsUtils;
 import com.azsocial.utils.SharePrefrences;
 import com.cjj.MaterialRefreshLayout;
@@ -56,12 +58,13 @@ public class App extends Application
 
     // app folder name
     public static String APP_FOLDERNAME = ".alldemo";
+    public static String strPrevTime = "";
 
     // class for the share pref keys and valyes get set
     public static SharePrefrences sharePrefrences;
 
     // for the app context
-    static Context mContext;
+    public static Context mContext;
     // application on create methode for the create and int base values
     @Override
     public void onCreate() {
@@ -434,6 +437,41 @@ public class App extends Application
         }
     }
 
+
+    public static AlarmManagerBroadcastReceiver alarm;
+    public static void startAlarmServices(Context context)
+    {
+        if(alarm == null)
+        {
+            alarm = new AlarmManagerBroadcastReceiver();
+        }
+        if(alarm != null)
+        {
+            alarm.CancelAlarm(context);
+            alarm.SetAlarm(context);
+        }
+        else
+        {
+            Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public static void stopUpdateLocation(Context context)
+    {
+        if(alarm == null)
+        {
+            alarm = new AlarmManagerBroadcastReceiver();
+        }
+        if(alarm != null)
+        {
+            alarm.CancelAlarm(context);
+        }
+        else
+        {
+            Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
 }

@@ -14,6 +14,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+
 
     <application
         android:name=".App"
@@ -23,7 +27,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.azsocial.activities.MainActivity">
+        <!--<activity android:name="com.azsocial.activities.MainActivity">-->
+        <activity android:name=".demo.alarm.ActAlarm">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -52,6 +57,27 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+
+        <!--for the Alarm Receiver-->
+        <receiver android:name=".demo.alarm.AlarmManagerBroadcastReceiver">
+            <intent-filter>
+                <action android:name="NOTIFICATION_SERVICE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:enabled="true"
+            android:exported="true"
+            android:name=".demo.alarm.ReceiverRunOnStartup"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -26,6 +26,22 @@ allprojects {
     }
 }
 
+ext{
+    supportLibraryVersion = '27.0.0'
+    butterknifeVersion = '8.5.1'
+    okhttpVersion = '3.8.1'
+    constraintLayoutVersion = '1.0.2'
+    gsonVersion = '2.8.2'
+    picassoVersion = '2.5.2'
+    materialrefeshlayoutVersion  = '1.3.0'
+
+    flurryAnalyticsVersion = '8.2.0'
+    flurryAdsVersion = '8.2.0'
+    multidexVersion = '1.0.2'
+
+    gPlayServicesBasementVersion = '11.8.0'
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
