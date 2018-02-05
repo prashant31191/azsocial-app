@@ -59,6 +59,7 @@ public class App extends Application
     // app folder name
     public static String APP_FOLDERNAME = ".alldemo";
     public static String strPrevTime = "";
+    public static String strNewsApiKey = "462f5f3ede2841408e9ef575919befe5";
 
     // class for the share pref keys and valyes get set
     public static SharePrefrences sharePrefrences;

@@ -11,39 +11,39 @@ import java.io.Serializable;
 public class ArticlesModel implements Serializable {
 
     @SerializedName("author")
-    public String author;
+    public String author="";
 
     @SerializedName("title")
-    public String title;
+    public String title="";
 
     @SerializedName("description") // user for news list, chanel name,
-    public String description;
+    public String description="";
 
     @SerializedName("url") // user for news list, chanel name,
-    public String url;
+    public String url="";
 
     @SerializedName("urlToImage")
-    public String urlToImage;
+    public String urlToImage="";
 
     @SerializedName("publishedAt")
-    public String publishedAt;
+    public String publishedAt="";
 
 
     //channnel list
 
     @SerializedName("id")
-    public String id;
+    public String id="";
 
     @SerializedName("name")
-    public String name;
+    public String name="";
 
     @SerializedName("category")
-    public String category;
+    public String category="";
 
     @SerializedName("language")
-    public String language;
+    public String language="";
 
     @SerializedName("country")
-    public String country;
+    public String country="";
 
 }

@@ -21,6 +21,9 @@
 
 
     <color name="yellow">#F6A623</color>
+    <color name="clrBlueDark">#071f3b</color>
+    <color name="clrBlueLight">#6e8bad</color>
+    <color name="clrBlue">#0e3f77</color>
 
     <color name="violet">#673AB7</color>
     <color name="violet_trans_80">#BF673AB7</color>

@@ -14,7 +14,7 @@ public class BaseFragment extends Fragment {
     public static final String ARGS_INSTANCE = "com.azsocial";
 
 
-    FragmentNavigation mFragmentNavigation;
+    protected FragmentNavigation mFragmentNavigation;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

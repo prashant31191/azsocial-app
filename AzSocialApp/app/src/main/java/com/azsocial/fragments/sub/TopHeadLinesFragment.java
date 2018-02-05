@@ -1,8 +1,7 @@
-package com.azsocial.fragments;
+package com.azsocial.fragments.sub;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
@@ -22,10 +21,9 @@ import android.widget.TextView;
 import com.azsocial.App;
 import com.azsocial.R;
 import com.azsocial.activities.MainActivity;
-import com.azsocial.demo.news.recycler.ActNewsDetail;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
-import com.azsocial.demo.news.recycler.newsapi.NewsChannelsResponse;
-import com.azsocial.utils.AppFlags;
+import com.azsocial.demo.news.recycler.newsapi.TopHeadLinesResponse;
+import com.azsocial.fragments.BaseFragment;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.flurry.android.ads.FlurryAdInterstitial;
@@ -34,6 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -46,7 +45,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 
-public class HomeFragment extends BaseFragment {
+public class TopHeadLinesFragment extends BaseFragment {
 
 
     @BindView(R.id.btn_click_me)
@@ -75,22 +74,31 @@ public class HomeFragment extends BaseFragment {
     String strFrom = "", strData = "", category_id = "";
     int page = 1;
     FlurryAdInterstitial mFlurryAdInterstitial;
-
+    String strSourceName = "bbc-news";
 
 
     int fragCount;
-Activity mActivity ;
+    Activity mActivity;
 
-    public static HomeFragment newInstance(int instance) {
+    public static TopHeadLinesFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
-        HomeFragment fragment = new HomeFragment();
+        TopHeadLinesFragment fragment = new TopHeadLinesFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static TopHeadLinesFragment newInstance(Object object) {
+        Bundle args = new Bundle();
+        //args.putInt(ARGS_INSTANCE, instance);
+        args.putSerializable(ARGS_INSTANCE, (Serializable) object);
+        TopHeadLinesFragment fragment = new TopHeadLinesFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    public HomeFragment() {
+    public TopHeadLinesFragment() {
         // Required empty public constructor
     }
 
@@ -105,15 +113,33 @@ Activity mActivity ;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         mActivity = getActivity();
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        ButterKnife.bind(this, view);
+        try {
 
-        Bundle args = getArguments();
-        if (args != null) {
-            fragCount = args.getInt(ARGS_INSTANCE);
+            ButterKnife.bind(this, view);
+
+            Bundle args = getArguments();
+
+
+            if (args != null) {
+                Object obj = (Object) args.getSerializable(ARGS_INSTANCE);
+
+                if (obj instanceof Integer) {
+                    fragCount = (int) obj;
+                    //fragCount = args.getInt(ARGS_INSTANCE);
+                }
+                if (obj instanceof String) {
+                    strSourceName = (String) obj;
+                    //fragCount = args.getInt(ARGS_INSTANCE);
+                }
+
+                App.showLog("==fragCount=="+fragCount);
+                App.showLog("==strSourceName=="+strSourceName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 
@@ -130,18 +156,14 @@ Activity mActivity ;
             public void onClick(View v) {
 
                 if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(HomeFragment.newInstance(fragCount + 1));
+                    mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance(fragCount + 1));
 
                 }
             }
         });
 
 
-        ( (MainActivity)getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home "+fragCount);
-
-
-         /*  initialization();
-          asyncGetNewsList();*/
+        ((MainActivity) getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home " + fragCount);
 
         if (dataListAdapter == null) {
             page = 1;
@@ -150,6 +172,8 @@ Activity mActivity ;
             initialization();
             asyncGetNewsList();
         }
+         /*  initialization();
+          asyncGetNewsList();*/
 
     }
 
@@ -163,9 +187,6 @@ Activity mActivity ;
     public void onDestroyView() {
         super.onDestroyView();
     }
-
-
-
 
 
     private void initialization() {
@@ -223,7 +244,8 @@ Activity mActivity ;
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/sources?apiKey="+App.strNewsApiKey+"&page="+page;
+            //https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=462f5f3ede2841408e9ef575919befe5
+            String url = "https://newsapi.org/v2/top-headlines?sources=" + strSourceName + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -248,7 +270,7 @@ Activity mActivity ;
                 }
 
                 @Override
-                public void onResponse(Call call,final Response response) throws IOException {
+                public void onResponse(Call call, final Response response) throws IOException {
                     final ResponseBody responseBody = response.body();
 
                     mActivity.runOnUiThread(new Runnable() {
@@ -266,22 +288,18 @@ Activity mActivity ;
                                     App.showLog("==result==" + result.toString());
 
                                     Gson gson = new GsonBuilder().create();
-                                    NewsChannelsResponse newsHeadlinesResponse = gson.fromJson(result.toString(), NewsChannelsResponse.class);
+                                    TopHeadLinesResponse topHeadLinesResponse = gson.fromJson(result.toString(), TopHeadLinesResponse.class);
                                     App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-                                    if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
-                                        //arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        if(page == 1){
-                                            arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        }
-                                        else
-                                        {
-                                            arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
+                                    if (topHeadLinesResponse != null && topHeadLinesResponse.arrayListArticlesModel != null) {
+                                        //arrayListArticlesModel = topHeadLinesResponse.arrayListArticlesModel;
+                                        if (page == 1) {
+                                            arrayListArticlesModel = topHeadLinesResponse.arrayListArticlesModel;
+                                        } else {
+                                            arrayListArticlesModel.addAll(topHeadLinesResponse.arrayListArticlesModel);
                                         }
                                         page = page + 1;
                                         setStaticData();
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         materialRefreshLayout.setLoadMore(false);
                                     }
                                 }
@@ -314,9 +332,9 @@ Activity mActivity ;
             if (arrayListArticlesModel != null && arrayListArticlesModel.size() > 0) {
 
                 llNodata.setVisibility(View.GONE);
-                App.showLog("======set adapter=DataListAdapter==page="+page);
+                App.showLog("======set adapter=DataListAdapter==page=" + page);
 
-                if (dataListAdapter == null || page <=2 ) {
+                if (dataListAdapter == null || page <= 2) {
                     dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
                     recyclerView.setAdapter(dataListAdapter);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -359,11 +377,11 @@ Activity mActivity ;
             try {
                 ArticlesModel mPEArticleModel = mArrListmPEArticleModel.get(i);
 
-                versionViewHolder.tvTitle.setText(mPEArticleModel.name);
-                versionViewHolder.tvDate.setText(mPEArticleModel.country);
-                versionViewHolder.tvTime.setText(mPEArticleModel.language);
+                versionViewHolder.tvTitle.setText(mPEArticleModel.title);
+                versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
+                versionViewHolder.tvTime.setText(mPEArticleModel.author);
 
-                versionViewHolder.tvDetail.setText(mPEArticleModel.id + "\n"+mPEArticleModel.category);
+                versionViewHolder.tvDetail.setText(mPEArticleModel.description);
                 versionViewHolder.tvLink.setText(mPEArticleModel.url);
 
                 if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
@@ -414,7 +432,7 @@ Activity mActivity ;
                         */
 
                         if (mFragmentNavigation != null) {
-                            mFragmentNavigation.pushFragment(new HomeFragment());
+                            mFragmentNavigation.pushFragment(new TopHeadLinesFragment());
 
                         }
 
@@ -442,7 +460,7 @@ Activity mActivity ;
         class VersionViewHolder extends RecyclerView.ViewHolder {
 
 
-            TextView tvTitle, tvDate, tvTime, tvDetail, tvLink;
+            TextView tvTitle, tvDate, tvTime, tvDetail,tvLink;
             ImageView ivPhoto, ivFavourite;
             RelativeLayout rlMain;
 

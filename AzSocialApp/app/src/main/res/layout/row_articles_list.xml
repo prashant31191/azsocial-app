@@ -16,7 +16,7 @@
         <ImageView
             android:id="@+id/ivPhoto"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="190dp"
 
             android:visibility="visible"
             android:alpha="0.3"
@@ -70,10 +70,26 @@
             android:textSize="@dimen/text_10s" />
 
         <TextView
+            android:id="@+id/tvLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvTime"
+            android:textColorLink="@color/clrBlueLight"
+            android:layout_marginLeft="@dimen/screen_m_d14"
+            android:layout_marginRight="@dimen/screen_m_d14"
+            android:layout_marginTop="@dimen/m_8dp"
+            android:fontFamily="@font/merienda_one"
+            android:autoLink="web"
+            android:textColor="@color/clr_txt_black3"
+            android:textSize="@dimen/text_10s"
+            android:text="asd"
+            />
+
+        <TextView
             android:id="@+id/tvDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tvTime"
+            android:layout_below="@+id/tvLink"
             android:layout_marginLeft="@dimen/screen_m_d14"
             android:layout_marginRight="@dimen/screen_m_d14"
             android:layout_marginTop="@dimen/m_8dp"
@@ -84,6 +100,8 @@
 
             android:textColor="@color/clr_txt_black3"
             android:textSize="@dimen/text_14s" />
+
+
 
 
         <ImageView
