@@ -25,6 +25,7 @@ import com.azsocial.activities.MainActivity;
 import com.azsocial.demo.news.recycler.ActNewsDetail;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.demo.news.recycler.newsapi.NewsChannelsResponse;
+import com.azsocial.fragments.sub.TopHeadLinesFragment;
 import com.azsocial.utils.AppFlags;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
@@ -49,23 +50,23 @@ import okhttp3.ResponseBody;
 public class HomeFragment extends BaseFragment {
 
 
-    @BindView(R.id.btn_click_me)
+    //@BindView(R.id.btn_click_me)
     Button btnClickMe;
 
-    @BindView(R.id.progressBar)
+    //@BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    @BindView(R.id.materialRefreshLayout)
+    //@BindView(R.id.materialRefreshLayout)
     MaterialRefreshLayout materialRefreshLayout;
 
 
-    @BindView(R.id.llNodata)
+    //@BindView(R.id.llNodata)
     LinearLayout llNodata;
 
-    @BindView(R.id.recyclerView)
+    //@BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    @BindView(R.id.tvNodata)
+    //@BindView(R.id.tvNodata)
     TextView tvNodata;
 
     DataListAdapter dataListAdapter;
@@ -108,8 +109,8 @@ Activity mActivity ;
 
         mActivity = getActivity();
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        ButterKnife.bind(this, view);
+        initFragViews(view);
+       // ButterKnife.bind(this, view);
 
         Bundle args = getArguments();
         if (args != null) {
@@ -119,6 +120,30 @@ Activity mActivity ;
 
         return view;
     }
+
+    private void initFragViews(View v)
+        {
+            try{
+
+                btnClickMe = (Button) v.findViewById(R.id.btn_click_me);
+                progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+
+                materialRefreshLayout = (MaterialRefreshLayout) v.findViewById(R.id.materialRefreshLayout );
+
+                llNodata = (LinearLayout) v.findViewById(R.id.llNodata);
+                recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
+                tvNodata = (TextView) v.findViewById(R.id.tvNodata);
+
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                //recyclerView.setHasFixedSize(true);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -149,6 +174,12 @@ Activity mActivity ;
 
             initialization();
             asyncGetNewsList();
+        }
+        else
+        {
+            progressBar.setVisibility(View.GONE);
+            setStaticData();
+
         }
 
     }
@@ -205,10 +236,7 @@ Activity mActivity ;
             });
 
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            //recyclerView.setHasFixedSize(true);
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -320,6 +348,8 @@ Activity mActivity ;
                     dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
                     recyclerView.setAdapter(dataListAdapter);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    llNodata.setVisibility(View.VISIBLE);
+                    dataListAdapter.notifyDataSetChanged();
                 } else {
                     dataListAdapter.notifyDataSetChanged();
                 }
@@ -413,9 +443,10 @@ Activity mActivity ;
                         mActivity.startActivity(intent);
                         */
 
-                        if (mFragmentNavigation != null) {
-                            mFragmentNavigation.pushFragment(new HomeFragment());
-
+                        if (mFragmentNavigation != null && mArrListmPEArticleModel.get(i) !=null && mArrListmPEArticleModel.get(i).id !=null ) {
+                            //mFragmentNavigation.pushFragment(NewsFragment.newInstance(fragCount + 1));
+                            //mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance(fragCount + 1));
+                            mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance((Object) ""+mArrListmPEArticleModel.get(i).id ));
                         }
 
                     }

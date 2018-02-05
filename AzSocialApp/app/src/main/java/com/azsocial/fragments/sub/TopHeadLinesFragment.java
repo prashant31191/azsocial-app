@@ -165,12 +165,27 @@ public class TopHeadLinesFragment extends BaseFragment {
 
         ((MainActivity) getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home " + fragCount);
 
+
+        if(recyclerView !=null) {
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            //recyclerView.setHasFixedSize(true);
+        }
+
+
         if (dataListAdapter == null) {
             page = 1;
             arrayListArticlesModel = new ArrayList<>();
 
             initialization();
             asyncGetNewsList();
+        }
+        else
+        {
+            progressBar.setVisibility(View.GONE);
+            setStaticData();
+
         }
          /*  initialization();
           asyncGetNewsList();*/
@@ -226,10 +241,7 @@ public class TopHeadLinesFragment extends BaseFragment {
             });
 
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-            recyclerView.setLayoutManager(linearLayoutManager);
-            //recyclerView.setHasFixedSize(true);
+
 
         } catch (Exception e) {
             e.printStackTrace();
