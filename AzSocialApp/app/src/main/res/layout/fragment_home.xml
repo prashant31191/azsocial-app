@@ -5,13 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="@color/clrGreyLight"
     android:orientation="vertical">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+
         android:orientation="vertical">
 
         <RelativeLayout
@@ -53,7 +54,9 @@
             <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+
+                />
         </com.cjj.MaterialRefreshLayout>
 
         <LinearLayout
@@ -87,6 +90,7 @@
 
 
     <Button
+        android:visibility="gone"
         android:id="@+id/btn_click_me"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

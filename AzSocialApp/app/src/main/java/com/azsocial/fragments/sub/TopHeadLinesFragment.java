@@ -24,6 +24,7 @@ import com.azsocial.activities.MainActivity;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.demo.news.recycler.newsapi.TopHeadLinesResponse;
 import com.azsocial.fragments.BaseFragment;
+import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.flurry.android.ads.FlurryAdInterstitial;
@@ -74,7 +75,9 @@ public class TopHeadLinesFragment extends BaseFragment {
     String strFrom = "", strData = "", category_id = "";
     int page = 1;
     FlurryAdInterstitial mFlurryAdInterstitial;
-    String strSourceName = "bbc-news";
+    String strSourceId = "bbc-news";
+    String strSourceName = "Top headlines";
+    ArticlesModel  mArticlesModel;
 
 
     int fragCount;
@@ -131,12 +134,27 @@ public class TopHeadLinesFragment extends BaseFragment {
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
                 if (obj instanceof String) {
-                    strSourceName = (String) obj;
+                    strSourceId = (String) obj;
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
+                if (obj instanceof ArticlesModel) {
+                     mArticlesModel = (ArticlesModel) obj;
+                    //fragCount = args.getInt(ARGS_INSTANCE);
+                }
+                
+                if(mArticlesModel !=null)
+                {
+                    App.showLog("====mArticlesModel====not null==");
 
-                App.showLog("==fragCount=="+fragCount);
-                App.showLog("==strSourceName=="+strSourceName);
+                    if(StringUtils.isValidString(mArticlesModel.id) == true)
+                        strSourceId = mArticlesModel.id;
+
+                    if(StringUtils.isValidString(mArticlesModel.name) == true)
+                        strSourceName = mArticlesModel.name;
+                }
+
+                App.showLog("==fragCount==" + fragCount);
+                App.showLog("==strSourceId==" + strSourceId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -163,10 +181,17 @@ public class TopHeadLinesFragment extends BaseFragment {
         });
 
 
-        ((MainActivity) getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home " + fragCount);
+        //((MainActivity) getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home " + fragCount);
 
+        if (StringUtils.isValidString(strSourceName) == true) {
+            ((MainActivity) getActivity()).updateToolbarTitle((strSourceName));
+        }
+        else
+        {
+            ((MainActivity) getActivity()).updateToolbarTitle(("Top headline news"));
+        }
 
-        if(recyclerView !=null) {
+        if (recyclerView != null) {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
             recyclerView.setLayoutManager(linearLayoutManager);
@@ -180,11 +205,9 @@ public class TopHeadLinesFragment extends BaseFragment {
 
             initialization();
             asyncGetNewsList();
-        }
-        else
-        {
+        } else {
             progressBar.setVisibility(View.GONE);
-            setStaticData();
+            setStaticData(true);
 
         }
          /*  initialization();
@@ -241,8 +264,6 @@ public class TopHeadLinesFragment extends BaseFragment {
             });
 
 
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -257,7 +278,7 @@ public class TopHeadLinesFragment extends BaseFragment {
 
             OkHttpClient httpClient = new OkHttpClient();
             //https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=462f5f3ede2841408e9ef575919befe5
-            String url = "https://newsapi.org/v2/top-headlines?sources=" + strSourceName + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
+            String url = "https://newsapi.org/v2/top-headlines?sources=" + strSourceId + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -310,7 +331,7 @@ public class TopHeadLinesFragment extends BaseFragment {
                                             arrayListArticlesModel.addAll(topHeadLinesResponse.arrayListArticlesModel);
                                         }
                                         page = page + 1;
-                                        setStaticData();
+                                        setStaticData(false);
                                     } else {
                                         materialRefreshLayout.setLoadMore(false);
                                     }
@@ -335,7 +356,7 @@ public class TopHeadLinesFragment extends BaseFragment {
     }
 
 
-    private void setStaticData() {
+    private void setStaticData(boolean isSetAdapter) {
         try {
 
 
@@ -346,10 +367,11 @@ public class TopHeadLinesFragment extends BaseFragment {
                 llNodata.setVisibility(View.GONE);
                 App.showLog("======set adapter=DataListAdapter==page=" + page);
 
-                if (dataListAdapter == null || page <= 2) {
+                if (dataListAdapter == null || page <= 2 || isSetAdapter == true) {
                     dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
                     recyclerView.setAdapter(dataListAdapter);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    dataListAdapter.notifyDataSetChanged();
                 } else {
                     dataListAdapter.notifyDataSetChanged();
                 }
@@ -443,9 +465,8 @@ public class TopHeadLinesFragment extends BaseFragment {
                         mActivity.startActivity(intent);
                         */
 
-                        if (mFragmentNavigation != null) {
-                            mFragmentNavigation.pushFragment(new TopHeadLinesFragment());
-
+                        if (mArrListmPEArticleModel.get(i) !=null && mFragmentNavigation != null) {
+                            mFragmentNavigation.pushFragment(NewsDetailFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));
                         }
 
                     }
@@ -472,7 +493,7 @@ public class TopHeadLinesFragment extends BaseFragment {
         class VersionViewHolder extends RecyclerView.ViewHolder {
 
 
-            TextView tvTitle, tvDate, tvTime, tvDetail,tvLink;
+            TextView tvTitle, tvDate, tvTime, tvDetail, tvLink;
             ImageView ivPhoto, ivFavourite;
             RelativeLayout rlMain;
 

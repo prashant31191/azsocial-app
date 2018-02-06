@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,23 +51,23 @@ import okhttp3.ResponseBody;
 public class HomeFragment extends BaseFragment {
 
 
-    //@BindView(R.id.btn_click_me)
+    @BindView(R.id.btn_click_me)
     Button btnClickMe;
 
-    //@BindView(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    //@BindView(R.id.materialRefreshLayout)
+    @BindView(R.id.materialRefreshLayout)
     MaterialRefreshLayout materialRefreshLayout;
 
 
-    //@BindView(R.id.llNodata)
+    @BindView(R.id.llNodata)
     LinearLayout llNodata;
 
-    //@BindView(R.id.recyclerView)
+    @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    //@BindView(R.id.tvNodata)
+    @BindView(R.id.tvNodata)
     TextView tvNodata;
 
     DataListAdapter dataListAdapter;
@@ -109,9 +110,15 @@ Activity mActivity ;
 
         mActivity = getActivity();
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        initFragViews(view);
-       // ButterKnife.bind(this, view);
 
+        ButterKnife.bind(this, view);
+
+        if(recyclerView !=null) {
+            //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            //recyclerView.setHasFixedSize(true);
+        }
         Bundle args = getArguments();
         if (args != null) {
             fragCount = args.getInt(ARGS_INSTANCE);
@@ -121,29 +128,6 @@ Activity mActivity ;
         return view;
     }
 
-    private void initFragViews(View v)
-        {
-            try{
-
-                btnClickMe = (Button) v.findViewById(R.id.btn_click_me);
-                progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-
-                materialRefreshLayout = (MaterialRefreshLayout) v.findViewById(R.id.materialRefreshLayout );
-
-                llNodata = (LinearLayout) v.findViewById(R.id.llNodata);
-                recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
-                tvNodata = (TextView) v.findViewById(R.id.tvNodata);
-
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                //recyclerView.setHasFixedSize(true);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-        }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -178,7 +162,7 @@ Activity mActivity ;
         else
         {
             progressBar.setVisibility(View.GONE);
-            setStaticData();
+            setStaticData(true);
 
         }
 
@@ -306,7 +290,7 @@ Activity mActivity ;
                                             arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
                                         }
                                         page = page + 1;
-                                        setStaticData();
+                                        setStaticData(false);
                                     }
                                     else
                                     {
@@ -333,7 +317,7 @@ Activity mActivity ;
     }
 
 
-    private void setStaticData() {
+    private void setStaticData(boolean isSetAdapter) {
         try {
 
 
@@ -344,11 +328,10 @@ Activity mActivity ;
                 llNodata.setVisibility(View.GONE);
                 App.showLog("======set adapter=DataListAdapter==page="+page);
 
-                if (dataListAdapter == null || page <=2 ) {
+                if (dataListAdapter == null || page <=2 || isSetAdapter == true) {
                     dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
                     recyclerView.setAdapter(dataListAdapter);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
-                    llNodata.setVisibility(View.VISIBLE);
                     dataListAdapter.notifyDataSetChanged();
                 } else {
                     dataListAdapter.notifyDataSetChanged();
@@ -443,10 +426,10 @@ Activity mActivity ;
                         mActivity.startActivity(intent);
                         */
 
-                        if (mFragmentNavigation != null && mArrListmPEArticleModel.get(i) !=null && mArrListmPEArticleModel.get(i).id !=null ) {
+                        if (mFragmentNavigation != null && mArrListmPEArticleModel.get(i) !=null) {
                             //mFragmentNavigation.pushFragment(NewsFragment.newInstance(fragCount + 1));
                             //mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance(fragCount + 1));
-                            mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance((Object) ""+mArrListmPEArticleModel.get(i).id ));
+                            mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));
                         }
 
                     }

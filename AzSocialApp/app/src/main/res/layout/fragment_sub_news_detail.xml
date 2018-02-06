@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/clrGreyLight">
+
+    <RelativeLayout
+        android:id="@+id/rlImageFullView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.azsocial.utils.TouchImageView
+            android:id="@+id/ivPhoto"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#3000"
+            android:scaleType="fitCenter"
+            android:src="@drawable/splash"
+            android:visibility="visible" />
+
+        <ImageView
+            android:id="@+id/ivClose"
+            android:layout_width="@dimen/m_35dp"
+            android:layout_height="@dimen/m_35dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="centerInside"
+            android:layout_marginRight="@dimen/m_5dp"
+            android:layout_marginTop="@dimen/m_5dp"
+            android:src="@drawable/ic_cancel_blue_grey_300_24dp"
+
+
+            />
+
+    </RelativeLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsvData"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/screen_m_d28">
+
+
+            <ImageView
+                android:id="@+id/ivPhoto2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_star_border_black_24dp"
+                android:visibility="visible" />
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/cardlist_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivPhoto2"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:orientation="vertical"
+                card_view:cardBackgroundColor="@color/clrWhite"
+                card_view:cardCornerRadius="3dp"
+                card_view:cardElevation="3dp"
+                card_view:cardUseCompatPadding="true"
+
+                >
+
+
+                <RelativeLayout
+                    android:id="@+id/rlMain"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+
+                    >
+                    <!--android:paddingRight="@dimen/screen_m_d14"-->
+
+                    <!--android:layout_toRightOf="@+id/ivPhoto"-->
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/screen_m_d14"
+                        android:layout_marginRight="@dimen/screen_m_d14"
+                        android:layout_marginTop="@dimen/screen_m_d14"
+                        android:layout_toLeftOf="@+id/ivFavourite"
+
+                        android:fontFamily="@font/merienda_one"
+                        android:singleLine="true"
+
+                        android:text="Event Tit "
+                        android:textColor="@color/clr_txt_black"
+                        android:textSize="@dimen/text_16s" />
+
+
+                    <TextView
+                        android:id="@+id/tvDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvTitle"
+                        android:layout_marginLeft="@dimen/screen_m_d14"
+                        android:layout_marginRight="@dimen/m_8dp"
+
+                        android:text="Mar 1,2017"
+                        android:textColor="@color/clr_txt_black5"
+                        android:textSize="@dimen/text_10s" />
+
+                    <TextView
+                        android:id="@+id/tvTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/tvTitle"
+
+                        android:layout_marginRight="@dimen/screen_m_d14"
+                        android:text="11:54"
+                        android:textColor="@color/clr_txt_black3"
+                        android:textSize="@dimen/text_10s" />
+
+                    <TextView
+                        android:id="@+id/tvLink"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvTime"
+                        android:layout_marginLeft="@dimen/screen_m_d14"
+                        android:layout_marginRight="@dimen/screen_m_d14"
+                        android:layout_marginTop="@dimen/m_8dp"
+                        android:autoLink="web"
+                        android:fontFamily="@font/merienda_one"
+                        android:text="asd"
+                        android:textColor="@color/clr_txt_black3"
+                        android:textColorLink="@color/clrBlueLight"
+                        android:textSize="@dimen/text_10s" />
+
+                    <TextView
+                        android:id="@+id/tvDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvLink"
+                        android:layout_marginBottom="@dimen/screen_m_d14"
+                        android:layout_marginLeft="@dimen/screen_m_d14"
+                        android:layout_marginRight="@dimen/screen_m_d14"
+                        android:layout_marginTop="@dimen/m_8dp"
+
+                        android:fontFamily="@font/merienda_one"
+                        android:minLines="3"
+                        android:text="lore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsume"
+
+                        android:textColor="@color/clr_txt_black3"
+                        android:textSize="@dimen/text_14s" />
+
+
+                    <ImageView
+                        android:id="@+id/ivFavourite"
+                        android:layout_width="@dimen/m_24dp"
+                        android:layout_height="@dimen/m_24dp"
+
+                        android:layout_alignParentRight="true" />
+
+
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <View
+                android:id="@+id/vLine"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/m_divider_1dp"
+                android:layout_below="@+id/cardlist_item"
+                android:background="@color/clr_divider"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+</RelativeLayout>

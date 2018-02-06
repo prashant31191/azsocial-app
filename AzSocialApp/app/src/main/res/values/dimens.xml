@@ -17,13 +17,34 @@
 
 
 
+    <dimen name="screen_m_d6">6dp</dimen>
     <dimen name="screen_m_d14">14dp</dimen>
+    <dimen name="screen_m_d28">14dp</dimen>
+
     <dimen name="rw_ev_img_100dp">100dp</dimen>
 
     <dimen name="m_divider_1dp">1.3dp</dimen>
 
+    <dimen name="m_5dp">5dp</dimen>
     <dimen name="m_8dp">8dp</dimen>
+    <dimen name="m_10dp">10dp</dimen>
+    <dimen name="m_15dp">15dp</dimen>
+    <dimen name="m_20dp">20dp</dimen>
+
     <dimen name="m_24dp">24dp</dimen>
+
+    <dimen name="m_25dp">20dp</dimen>
+    <dimen name="m_30dp">30dp</dimen>
+    <dimen name="m_35dp">35dp</dimen>
+    <dimen name="m_40dp">40dp</dimen>
+    <dimen name="m_45dp">45dp</dimen>
+    <dimen name="m_50dp">50dp</dimen>
+    <dimen name="m_60dp">60dp</dimen>
+    <dimen name="m_70dp">70dp</dimen>
+    <dimen name="m_80dp">80dp</dimen>
+    <dimen name="m_90dp">90dp</dimen>
+    <dimen name="m_100dp">100dp</dimen>
+
 
     <dimen name="m_20sp">18dp</dimen>
 
