@@ -5,13 +5,13 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -27,7 +27,6 @@ import com.azsocial.fragments.BaseFragment;
 import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.flurry.android.ads.FlurryAdInterstitial;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
@@ -47,10 +46,6 @@ import okhttp3.ResponseBody;
 
 
 public class TopHeadLinesFragment extends BaseFragment {
-
-
-    @BindView(R.id.btn_click_me)
-    Button btnClickMe;
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -72,15 +67,12 @@ public class TopHeadLinesFragment extends BaseFragment {
     ArrayList<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
-    String strFrom = "", strData = "", category_id = "";
     int page = 1;
-    FlurryAdInterstitial mFlurryAdInterstitial;
     String strSourceId = "bbc-news";
     String strSourceName = "Top headlines";
     ArticlesModel  mArticlesModel;
 
 
-    int fragCount;
     Activity mActivity;
 
     public static TopHeadLinesFragment newInstance(int instance) {
@@ -117,7 +109,7 @@ public class TopHeadLinesFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mActivity = getActivity();
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_sub_topheadline, container, false);
 
         try {
 
@@ -129,17 +121,12 @@ public class TopHeadLinesFragment extends BaseFragment {
             if (args != null) {
                 Object obj = (Object) args.getSerializable(ARGS_INSTANCE);
 
-                if (obj instanceof Integer) {
-                    fragCount = (int) obj;
-                    //fragCount = args.getInt(ARGS_INSTANCE);
-                }
                 if (obj instanceof String) {
                     strSourceId = (String) obj;
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
                 if (obj instanceof ArticlesModel) {
                      mArticlesModel = (ArticlesModel) obj;
-                    //fragCount = args.getInt(ARGS_INSTANCE);
                 }
                 
                 if(mArticlesModel !=null)
@@ -153,7 +140,6 @@ public class TopHeadLinesFragment extends BaseFragment {
                         strSourceName = mArticlesModel.name;
                 }
 
-                App.showLog("==fragCount==" + fragCount);
                 App.showLog("==strSourceId==" + strSourceId);
             }
         } catch (Exception e) {
@@ -167,21 +153,6 @@ public class TopHeadLinesFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
-        btnClickMe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (mFragmentNavigation != null) {
-                    mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance(fragCount + 1));
-
-                }
-            }
-        });
-
-
-        //((MainActivity) getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home " + fragCount);
 
         if (StringUtils.isValidString(strSourceName) == true) {
             ((MainActivity) getActivity()).updateToolbarTitle((strSourceName));
@@ -198,12 +169,10 @@ public class TopHeadLinesFragment extends BaseFragment {
             //recyclerView.setHasFixedSize(true);
         }
 
-
+        initialization();
         if (dataListAdapter == null) {
             page = 1;
             arrayListArticlesModel = new ArrayList<>();
-
-            initialization();
             asyncGetNewsList();
         } else {
             progressBar.setVisibility(View.GONE);
@@ -252,11 +221,7 @@ public class TopHeadLinesFragment extends BaseFragment {
                 @Override
                 public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
                     try {
-                        //materialRefreshLayout.setLoadMore(false);
-                        //App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-
                         asyncGetNewsList();
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -351,7 +316,10 @@ public class TopHeadLinesFragment extends BaseFragment {
 
 
         } catch (Exception e) {
+            progressBar.setVisibility(View.GONE);
+            App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
             e.printStackTrace();
+
         }
     }
 
@@ -455,7 +423,7 @@ public class TopHeadLinesFragment extends BaseFragment {
                     }
                 });
 
-                versionViewHolder.rlMain.setOnClickListener(new View.OnClickListener() {
+                versionViewHolder.cvItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
@@ -496,12 +464,14 @@ public class TopHeadLinesFragment extends BaseFragment {
             TextView tvTitle, tvDate, tvTime, tvDetail, tvLink;
             ImageView ivPhoto, ivFavourite;
             RelativeLayout rlMain;
+            CardView cvItem;
 
 
             public VersionViewHolder(View itemView) {
                 super(itemView);
 
 
+                cvItem = (CardView) itemView.findViewById(R.id.cvItem);
                 rlMain = (RelativeLayout) itemView.findViewById(R.id.rlMain);
                 tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
                 tvDate = (TextView) itemView.findViewById(R.id.tvDate);

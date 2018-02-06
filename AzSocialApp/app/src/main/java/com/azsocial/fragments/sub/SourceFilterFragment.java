@@ -1,8 +1,7 @@
-package com.azsocial.fragments;
+package com.azsocial.fragments.sub;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
@@ -14,8 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,23 +22,20 @@ import android.widget.TextView;
 import com.azsocial.App;
 import com.azsocial.R;
 import com.azsocial.activities.MainActivity;
-import com.azsocial.demo.news.recycler.ActNewsDetail;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.demo.news.recycler.newsapi.FilterModel;
 import com.azsocial.demo.news.recycler.newsapi.NewsChannelsResponse;
-import com.azsocial.fragments.sub.SourceFilterFragment;
-import com.azsocial.fragments.sub.TopHeadLinesFragment;
-import com.azsocial.utils.AppFlags;
+import com.azsocial.fragments.BaseFragment;
+import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.flurry.android.ads.FlurryAdInterstitial;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,7 +47,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 
-public class HomeFragment extends BaseFragment {
+public class SourceFilterFragment extends BaseFragment {
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -65,23 +59,8 @@ public class HomeFragment extends BaseFragment {
     @BindView(R.id.llNodata)
     LinearLayout llNodata;
 
-    @BindView(R.id.llFilter)
-    LinearLayout llFilter;
-
-    @BindView(R.id.rlFilter)
-    RelativeLayout rlFilter;
-
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-
-    @BindView(R.id.recyclerViewCountry)
-    RecyclerView recyclerViewCountry;
-
-    @BindView(R.id.recyclerViewLanguage)
-    RecyclerView recyclerViewLanguage;
-
-    @BindView(R.id.recyclerViewCategory)
-    RecyclerView recyclerViewCategory;
 
     @BindView(R.id.tvNodata)
     TextView tvNodata;
@@ -91,23 +70,30 @@ public class HomeFragment extends BaseFragment {
 
 
     int page = 1;
+    FilterModel mFilterModel;
+
+
     Activity mActivity;
 
-    String strCountryCodes = "ae,ar,at,au,be,bg,br,ca,ch,cn,co,cu,cz,de,eg,fr,gb,gr,hk,hu,id,ie,il,in,it,jp,kr,lt,lv,ma,mx,my,ng,nl,no,nz,ph,pl,pt,ro,rs,ru,sa,se,sg,si,sk,th,tr,tw,ua,us,ve,za";
-    String strLanguagesCodes = "ar,de,en,es,fr,he,it,nl,no,pt,ru,se,ud,zh";
-    String strcategoryCodes = "business,entertainment,general,health,science,sports,technology";
-
-
-    public static HomeFragment newInstance(int instance) {
+    public static SourceFilterFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
-        HomeFragment fragment = new HomeFragment();
+        SourceFilterFragment fragment = new SourceFilterFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static SourceFilterFragment newInstance(Object object) {
+        Bundle args = new Bundle();
+        //args.putInt(ARGS_INSTANCE, instance);
+        args.putSerializable(ARGS_INSTANCE, (Serializable) object);
+        SourceFilterFragment fragment = new SourceFilterFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    public HomeFragment() {
+    public SourceFilterFragment() {
         // Required empty public constructor
     }
 
@@ -122,47 +108,55 @@ public class HomeFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         mActivity = getActivity();
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_sub_topheadline, container, false);
 
-        ButterKnife.bind(this, view);
+        try {
+
+            ButterKnife.bind(this, view);
+
+            Bundle args = getArguments();
 
 
-        Bundle args = getArguments();
-        if (args != null) {
-            //fragCount = args.getInt(ARGS_INSTANCE);
+            if (args != null) {
+                Object obj = (Object) args.getSerializable(ARGS_INSTANCE);
+
+                if (obj instanceof FilterModel) {
+                     mFilterModel = (FilterModel) obj;
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 
         return view;
     }
 
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ((MainActivity) getActivity()).updateToolbarTitle("Home");
+       if(mFilterModel !=null)
+        {
+            ((MainActivity) getActivity()).updateToolbarTitle(("Filter " + StringUtils.setString(mFilterModel.strFilterKey)  + " ("+ StringUtils.setString(mFilterModel.strFilterValue) + ")"));
 
+        }
+        else
+       {
+           ((MainActivity) getActivity()).updateToolbarTitle(("Filter source"));
+       }
+       {
+
+       }
 
         if (recyclerView != null) {
-            //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
             recyclerView.setLayoutManager(gridLayoutManager);
-            //recyclerView.setHasFixedSize(true);
-        }
-
-
-        if (recyclerViewCountry != null && recyclerViewLanguage != null && recyclerViewCategory != null) {
-            setStaticListHorizontalList();
         }
 
         initialization();
-
-        rlFilter.setSelected(false);
-        setFilterVisibility();
-
         if (dataListAdapter == null) {
             page = 1;
             arrayListArticlesModel = new ArrayList<>();
@@ -172,6 +166,8 @@ public class HomeFragment extends BaseFragment {
             setStaticData(true);
 
         }
+         /*  initialization();
+          asyncGetNewsList();*/
 
     }
 
@@ -212,11 +208,7 @@ public class HomeFragment extends BaseFragment {
                 @Override
                 public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
                     try {
-                        //materialRefreshLayout.setLoadMore(false);
-                        //App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-
                         asyncGetNewsList();
-
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -224,112 +216,9 @@ public class HomeFragment extends BaseFragment {
             });
 
 
-            rlFilter.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (rlFilter.isSelected() == true) {
-                        rlFilter.setSelected(false);
-                        setFilterVisibility();
-                    } else {
-                        rlFilter.setSelected(true);
-                        setFilterVisibility();
-                    }
-                }
-            });
-
-
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-                    if (dy > 0) {
-                        // Scrolling up
-                        if (rlFilter.isSelected() == true) {
-                            rlFilter.setSelected(false);
-                            setFilterVisibility();
-                        }
-                    } /*else {
-                        // Scrolling down
-                        if(rlFilter.isSelected() == true)
-                        {
-                            rlFilter.setSelected(false);
-                            setFilterVisibility();
-                        }
-                    }*/
-                }
-
-                @Override
-                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
-
-                    /*if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
-                        // Do something
-                    } else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                        // Do something
-                    } else {
-                        // Do something
-                    }*/
-                }
-            });
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-
-    private void setStaticListHorizontalList() {
-        try {
-
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-            LinearLayoutManager layoutManager2 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-            LinearLayoutManager layoutManager3 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-
-            recyclerViewCountry.setLayoutManager(layoutManager);
-            recyclerViewLanguage.setLayoutManager(layoutManager2);
-            recyclerViewCategory.setLayoutManager(layoutManager3);
-
-            String[] strCountry = strCountryCodes.split(",");
-            String[] strLanguage = strLanguagesCodes.split(",");
-            String[] strCategory = strcategoryCodes.split(",");
-
-
-            if (strCountry != null && strLanguage != null && strCategory != null) {
-
-                ArrayList<String> arrayListCountry = new ArrayList(Arrays.asList(strCountry));
-                ArrayList<String> arrayListLanguages = new ArrayList(Arrays.asList(strLanguage));
-                ArrayList<String> arrayListCategory = new ArrayList(Arrays.asList(strCategory));
-
-                CommonListAdapter adapterCountry = new CommonListAdapter(getActivity(), "0", arrayListCountry);
-                recyclerViewCountry.setAdapter(adapterCountry);
-
-                CommonListAdapter adapterLanguages = new CommonListAdapter(getActivity(), "1", arrayListLanguages);
-                recyclerViewLanguage.setAdapter(adapterLanguages);
-
-                CommonListAdapter adapterCategory = new CommonListAdapter(getActivity(), "2", arrayListCategory);
-                recyclerViewCategory.setAdapter(adapterCategory);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void setFilterVisibility() {
-        try {
-
-            if (rlFilter.isSelected() == true) {
-                llFilter.setVisibility(View.VISIBLE);
-            } else {
-                llFilter.setVisibility(View.GONE);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
 
@@ -340,7 +229,9 @@ public class HomeFragment extends BaseFragment {
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/sources?apiKey=" + App.strNewsApiKey + "&page=" + page;
+
+            String url = "https://newsapi.org/v2/sources?apiKey=" + App.strNewsApiKey + "&"+mFilterModel.strFilterKey+"=" + mFilterModel.strFilterValue + "&page=" + page;
+
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -383,14 +274,14 @@ public class HomeFragment extends BaseFragment {
                                     App.showLog("==result==" + result.toString());
 
                                     Gson gson = new GsonBuilder().create();
-                                    NewsChannelsResponse newsHeadlinesResponse = gson.fromJson(result.toString(), NewsChannelsResponse.class);
+                                    NewsChannelsResponse newsChannelsResponse = gson.fromJson(result.toString(), NewsChannelsResponse.class);
                                     App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-                                    if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
-                                        //arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
+                                    if (newsChannelsResponse != null && newsChannelsResponse.arrayListArticlesModel != null) {
+                                        //arrayListArticlesModel = newsChannelsResponse.arrayListArticlesModel;
                                         if (page == 1) {
-                                            arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
+                                            arrayListArticlesModel = newsChannelsResponse.arrayListArticlesModel;
                                         } else {
-                                            arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
+                                            arrayListArticlesModel.addAll(newsChannelsResponse.arrayListArticlesModel);
                                         }
                                         page = page + 1;
                                         setStaticData(false);
@@ -416,6 +307,7 @@ public class HomeFragment extends BaseFragment {
             progressBar.setVisibility(View.GONE);
             App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
             e.printStackTrace();
+
         }
     }
 
@@ -450,6 +342,7 @@ public class HomeFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
+
 
 
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
@@ -521,7 +414,6 @@ public class HomeFragment extends BaseFragment {
                             mFragmentNavigation.pushFragment(TopHeadLinesFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));
                         }
 
-
                     }
                 });
 
@@ -566,115 +458,6 @@ public class HomeFragment extends BaseFragment {
                 tvLink = (TextView) itemView.findViewById(R.id.tvLink);
 
                 ivFavourite = (ImageView) itemView.findViewById(R.id.ivFavourite);
-            }
-
-        }
-    }
-
-
-    public class CommonListAdapter extends RecyclerView.Adapter<CommonListAdapter.VersionViewHolder> {
-        ArrayList<String> mArrList;
-        Context mContext;
-        String strType = "0"; // 0=country , 1 = Language , 2= Category
-
-
-        public CommonListAdapter(Context context, String type, ArrayList<String> arrList) {
-            mArrList = arrList;
-            mContext = context;
-            strType = type;
-        }
-
-        @Override
-        public VersionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_cntr_lang_list, viewGroup, false);
-            VersionViewHolder viewHolder = new VersionViewHolder(view);
-            return viewHolder;
-        }
-
-
-        @Override
-        public void onBindViewHolder(final VersionViewHolder versionViewHolder, final int i) {
-            try {
-
-                String strData = mArrList.get(i);
-
-
-                versionViewHolder.tvTitleOval.setText(strData);
-                versionViewHolder.tvTitleRect.setText(strData);
-
-
-                versionViewHolder.rlMainOval.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-
-                        if (mFragmentNavigation != null && mArrList.get(i) != null) {
-
-                            FilterModel filterModel = new FilterModel();
-                            filterModel.strFilterValue = (String) mArrList.get(i);
-
-                            if (strType.equalsIgnoreCase("0")) {
-                                filterModel.strFilterKey = "country";
-                            } else {
-                                filterModel.strFilterKey = "language";
-                            }
-                            mFragmentNavigation.pushFragment(SourceFilterFragment.newInstance((Object) filterModel));
-                        }
-
-                    }
-                });
-                versionViewHolder.rlMainRect.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-
-                        if (mFragmentNavigation != null && mArrList.get(i) != null) {
-
-                            FilterModel filterModel = new FilterModel();
-                            filterModel.strFilterValue = (String) mArrList.get(i);
-                            filterModel.strFilterKey = "category";
-
-                            mFragmentNavigation.pushFragment(SourceFilterFragment.newInstance((Object) filterModel));
-                        }
-
-                    }
-                });
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mArrList.size();
-        }
-
-
-        class VersionViewHolder extends RecyclerView.ViewHolder {
-
-
-            TextView tvTitleOval, tvTitleRect;
-            RelativeLayout rlMainOval, rlMainRect;
-
-
-            public VersionViewHolder(View itemView) {
-                super(itemView);
-
-                rlMainOval = (RelativeLayout) itemView.findViewById(R.id.rlMainOval);
-                rlMainRect = (RelativeLayout) itemView.findViewById(R.id.rlMainRect);
-
-                tvTitleOval = (TextView) itemView.findViewById(R.id.tvTitleOval);
-                tvTitleRect = (TextView) itemView.findViewById(R.id.tvTitleRect);
-
-                if (strType.equalsIgnoreCase("2")) {
-                    rlMainRect.setVisibility(View.VISIBLE);
-                    rlMainOval.setVisibility(View.GONE);
-                } else {
-                    rlMainRect.setVisibility(View.GONE);
-                    rlMainOval.setVisibility(View.VISIBLE);
-                }
             }
 
         }

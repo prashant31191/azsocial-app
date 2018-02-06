@@ -22,24 +22,11 @@
     <RelativeLayout
         android:id="@+id/rlMain"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/m_200dp"
+        android:layout_height="wrap_content"
 
 
         >
-        <!--android:paddingRight="@dimen/screen_m_d14"-->
-        <ImageView
-            android:id="@+id/ivPhoto"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
 
-            android:visibility="visible"
-            android:alpha="0.4"
-            android:background="@color/black"
-
-            android:scaleType="centerCrop"
-            />
-
-        <!--android:layout_toRightOf="@+id/ivPhoto"-->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
@@ -65,8 +52,9 @@
             android:layout_below="@+id/tvTitle"
             android:layout_marginLeft="@dimen/screen_m_d14"
             android:layout_marginRight="@dimen/m_8dp"
-            android:singleLine="true"
+
             android:text="Mar 1,2017"
+            android:singleLine="true"
             android:textColor="@color/clr_txt_black5"
             android:textSize="@dimen/text_10s" />
 
@@ -77,11 +65,11 @@
 
             android:layout_alignParentRight="true"
             android:layout_below="@+id/tvTitle"
-            android:singleLine="true"
 
             android:layout_marginRight="@dimen/screen_m_d14"
             android:text="11:54"
             android:textColor="@color/clr_txt_black3"
+            android:singleLine="true"
             android:textSize="@dimen/text_10s" />
 
         <TextView
@@ -92,7 +80,7 @@
             android:textColorLink="@color/clrBlue"
             android:layout_marginLeft="@dimen/screen_m_d14"
             android:layout_marginRight="@dimen/screen_m_d14"
-            android:layout_marginTop="@dimen/m_5dp"
+            android:layout_marginTop="@dimen/m_8dp"
             android:layout_marginBottom="@dimen/screen_m_d14"
             android:fontFamily="@font/merienda_one"
             android:autoLink="web"
@@ -107,17 +95,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvTime"
-            android:layout_marginLeft="@dimen/screen_m_d14"
-            android:layout_marginRight="@dimen/screen_m_d14"
-            android:layout_marginTop="@dimen/m_8dp"
+            android:layout_alignLeft="@+id/tvLink"
+            android:layout_alignStart="@+id/tvLink"
+
 
 
             android:fontFamily="@font/merienda_one"
-            android:maxLines="5"
+            android:maxLines="3"
             android:text="lore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsumelore ipsume"
-
             android:textColor="@color/clr_txt_black3"
-            android:textSize="@dimen/text_14s" />
+            android:textSize="@dimen/text_12s" />
 
 
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:id="@+id/rlMainOval"
+        android:layout_width="@dimen/m_50dp"
+        android:layout_height="@dimen/m_50dp"
+        android:layout_marginLeft="@dimen/m_8dp"
+        android:layout_marginTop="@dimen/m_3dp"
+        android:layout_marginBottom="@dimen/m_3dp"
+        android:background="@drawable/sp_oval_blue">
+
+        <TextView
+            android:id="@+id/tvTitleOval"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/merienda_one"
+            android:maxLength="4"
+            android:text="asd"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_14s"
+            android:gravity="center"
+            android:textStyle="bold"
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:visibility="visible"
+        android:id="@+id/rlMainRect"
+        android:layout_below="@+id/rlMainOval"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/m_40dp"
+        android:layout_marginLeft="@dimen/m_8dp"
+        android:layout_marginTop="@dimen/m_3dp"
+        android:layout_marginBottom="@dimen/m_3dp"
+        android:background="@drawable/sp_rect_corner_blue">
+
+        <TextView
+            android:id="@+id/tvTitleRect"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/comfortaa_light"
+            android:paddingLeft="@dimen/screen_m_d14"
+            android:paddingRight="@dimen/screen_m_d14"
+            android:text="asd"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_14s"
+            android:gravity="center"
+            android:textStyle="bold"
+            />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

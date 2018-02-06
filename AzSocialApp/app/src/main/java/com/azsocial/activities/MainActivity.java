@@ -12,11 +12,11 @@ import android.widget.ImageView;
 
 import com.azsocial.R;
 import com.azsocial.fragments.BaseFragment;
-import com.azsocial.fragments.NewsFragment;
 import com.azsocial.fragments.HomeFragment;
-import com.azsocial.fragments.ShareFragment;
+import com.azsocial.fragments.NewsFragment;
 import com.azsocial.fragments.ProfileFragment;
 import com.azsocial.fragments.SearchFragment;
+import com.azsocial.fragments.ShareFragment;
 import com.azsocial.utils.FragmentHistory;
 import com.azsocial.utils.Utils;
 import com.azsocial.views.FragNavController;
@@ -167,11 +167,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-
-
             case android.R.id.home:
-
-
                 onBackPressed();
                 return true;
         }
@@ -247,10 +243,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
     public void onTabTransaction(Fragment fragment, int index) {
         // If we have a backstack, show the back button
         if (getSupportActionBar() != null && mNavController != null) {
-
-
             updateToolbar();
-
         }
     }
 
@@ -302,9 +295,6 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
 
 
     public void updateToolbarTitle(String title) {
-
-
         getSupportActionBar().setTitle(title);
-
     }
 }

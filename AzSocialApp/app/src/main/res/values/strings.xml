@@ -28,4 +28,10 @@
     </string>
     <string name="strNetError">No internet connection</string>
 
+
+
+    <array name="str_arr_country_code">
+        <item>Home</item>
+    </array>
+
 </resources>

@@ -25,6 +25,7 @@
 
     <dimen name="m_divider_1dp">1.3dp</dimen>
 
+    <dimen name="m_3dp">3dp</dimen>
     <dimen name="m_5dp">5dp</dimen>
     <dimen name="m_8dp">8dp</dimen>
     <dimen name="m_10dp">10dp</dimen>
@@ -44,6 +45,11 @@
     <dimen name="m_80dp">80dp</dimen>
     <dimen name="m_90dp">90dp</dimen>
     <dimen name="m_100dp">100dp</dimen>
+    <dimen name="m_150dp">150dp</dimen>
+    <dimen name="m_200dp">200dp</dimen>
+    <dimen name="m_250dp">250dp</dimen>
+    <dimen name="m_300dp">300dp</dimen>
+    <dimen name="m_350dp">350dp</dimen>
 
 
     <dimen name="m_20sp">18dp</dimen>

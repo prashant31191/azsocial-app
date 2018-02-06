@@ -3,6 +3,5 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/comfortaa_light</item>
         <item>@font/merienda_one</item>
-        <item>@font/oxygen_mono</item>
     </array>
 </resources>

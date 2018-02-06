@@ -43,8 +43,7 @@ import java.util.regex.Pattern;
  * Created by prashant.chovatiya on 1/12/2018.
  */
 
-public class App extends Application
-{
+public class App extends Application {
 
     private static App mInstance;
     private static final String TAG = App.class.getSimpleName();
@@ -66,6 +65,7 @@ public class App extends Application
 
     // for the app context
     public static Context mContext;
+
     // application on create methode for the create and int base values
     @Override
     public void onCreate() {
@@ -96,13 +96,12 @@ public class App extends Application
             e.printStackTrace();
         }
     }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         MultiDex.install(this);
     }
-
-
 
 
     public static void showSnackBar(View view, String strMessage) {
@@ -126,13 +125,13 @@ public class App extends Application
 
     public static void showLogApi(String strMessage) {
         //Log.v("==App==", "--strMessage--" + strMessage);
-        Log.d("==App==","--API-MESSAGE--" + strMessage);
+        Log.d("==App==", "--API-MESSAGE--" + strMessage);
 
         //  appendLogApi("c_api", strMessage);
     }
 
     public static void showLogApi(String strOP, String strMessage) {
-        Log.d("==App=strOP="+strOP, "--strMessage--" + strMessage);
+        Log.d("==App=strOP=" + strOP, "--strMessage--" + strMessage);
 //        System.out.println("--API-strOP--" + strOP);
         //      System.out.println("--API-MESSAGE--" + strMessage);
 
@@ -224,28 +223,28 @@ public class App extends Application
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
-     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float px = dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return px;
     }
 
     /**
      * This method converts device specific pixels to density independent pixels.
      *
-     * @param px A value in px (pixels) unit. Which we need to convert into db
+     * @param px      A value in px (pixels) unit. Which we need to convert into db
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent dp equivalent to px value
      */
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        float dp = px / ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         return dp;
     }
 
@@ -291,14 +290,22 @@ public class App extends Application
 
 
     public void hideKeyBoard(View view) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     public static void hideSoftKeyboardMy(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -313,9 +320,7 @@ public class App extends Application
         try {
             activity.finish();
             activity.startActivity(intent);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -327,66 +332,77 @@ public class App extends Application
 
 
     public static void expand(final View v) {
-        //v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT); //WRAP_CONTENT
-        v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        final int targetHeight = v.getMeasuredHeight();
 
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        v.getLayoutParams().height = 1;
-        v.setVisibility(View.VISIBLE);
-        Animation a = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                v.getLayoutParams().height = interpolatedTime == 1
-                        //? WindowManager.LayoutParams.WRAP_CONTENT //WRAP_CONTENT
-                        ? WindowManager.LayoutParams.MATCH_PARENT //WRAP_CONTENT
-                        : (int) (targetHeight * interpolatedTime);
-                v.requestLayout();
-            }
+        try {
+            //v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT); //WRAP_CONTENT
+            v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            final int targetHeight = v.getMeasuredHeight();
 
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
+            // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+            v.getLayoutParams().height = 1;
+            v.setVisibility(View.VISIBLE);
+            Animation a = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    v.getLayoutParams().height = interpolatedTime == 1
+                            //? WindowManager.LayoutParams.WRAP_CONTENT //WRAP_CONTENT
+                            ? WindowManager.LayoutParams.MATCH_PARENT //WRAP_CONTENT
+                            : (int) (targetHeight * interpolatedTime);
+                    v.requestLayout();
+                }
 
-        // 1dp/ms
-        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-        v.startAnimation(a);
+                @Override
+                public boolean willChangeBounds() {
+                    return true;
+                }
+            };
+
+            // 1dp/ms
+            a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+            v.startAnimation(a);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     public static void expandWRAP_CONTENT(final View v) {
-        //v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT); //WRAP_CONTENT
-        v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        final int targetHeight = v.getMeasuredHeight();
+        try {
+            //v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT); //WRAP_CONTENT
+            v.measure(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+            final int targetHeight = v.getMeasuredHeight();
 
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        v.getLayoutParams().height = 1;
-        v.setVisibility(View.VISIBLE);
-        Animation a = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                v.getLayoutParams().height = interpolatedTime == 1
-                        //? WindowManager.LayoutParams.WRAP_CONTENT //WRAP_CONTENT
-                        ? WindowManager.LayoutParams.MATCH_PARENT //WRAP_CONTENT
-                        : (int) (targetHeight * interpolatedTime);
-                v.requestLayout();
-            }
+            // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+            v.getLayoutParams().height = 1;
+            v.setVisibility(View.VISIBLE);
+            Animation a = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    v.getLayoutParams().height = interpolatedTime == 1
+                            //? WindowManager.LayoutParams.WRAP_CONTENT //WRAP_CONTENT
+                            ? WindowManager.LayoutParams.MATCH_PARENT //WRAP_CONTENT
+                            : (int) (targetHeight * interpolatedTime);
+                    v.requestLayout();
+                }
 
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
+                @Override
+                public boolean willChangeBounds() {
+                    return true;
+                }
+            };
 
-        // 1dp/ms
-        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
-        v.startAnimation(a);
+            // 1dp/ms
+            a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+            v.startAnimation(a);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     public static void collapse(final View v) {
+        try{
         final int initialHeight = v.getMeasuredHeight();
 
         Animation a = new Animation() {
@@ -409,6 +425,10 @@ public class App extends Application
         // 1dp/ms
         a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void setStopLoadingMaterialRefreshLayout(MaterialRefreshLayout materialRefreshLayout) {
@@ -419,6 +439,7 @@ public class App extends Application
             materialRefreshLayout.finishRefreshLoadMore();
         }
     }
+
     private void createAppFolder() {
         try {
             String sdCardPath = Environment.getExternalStorageDirectory().toString();
@@ -440,36 +461,27 @@ public class App extends Application
 
 
     public static AlarmManagerBroadcastReceiver alarm;
-    public static void startAlarmServices(Context context)
-    {
-        if(alarm == null)
-        {
+
+    public static void startAlarmServices(Context context) {
+        if (alarm == null) {
             alarm = new AlarmManagerBroadcastReceiver();
         }
-        if(alarm != null)
-        {
+        if (alarm != null) {
             alarm.CancelAlarm(context);
             alarm.SetAlarm(context);
-        }
-        else
-        {
+        } else {
             Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
         }
 
     }
 
-    public static void stopUpdateLocation(Context context)
-    {
-        if(alarm == null)
-        {
+    public static void stopUpdateLocation(Context context) {
+        if (alarm == null) {
             alarm = new AlarmManagerBroadcastReceiver();
         }
-        if(alarm != null)
-        {
+        if (alarm != null) {
             alarm.CancelAlarm(context);
-        }
-        else
-        {
+        } else {
             Toast.makeText(context, "Alarm is null", Toast.LENGTH_SHORT).show();
         }
     }
