@@ -65,6 +65,9 @@ public class HomeFragment extends BaseFragment {
     @BindView(R.id.llNodata)
     LinearLayout llNodata;
 
+    @BindView(R.id.tvNodata)
+    TextView tvNodata;
+
     @BindView(R.id.llFilter)
     LinearLayout llFilter;
 
@@ -83,8 +86,6 @@ public class HomeFragment extends BaseFragment {
     @BindView(R.id.recyclerViewCategory)
     RecyclerView recyclerViewCategory;
 
-    @BindView(R.id.tvNodata)
-    TextView tvNodata;
 
     DataListAdapter dataListAdapter;
     ArrayList<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
@@ -114,13 +115,11 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         mActivity = getActivity();

@@ -15,6 +15,7 @@ import com.azsocial.fragments.BaseFragment;
 import com.azsocial.fragments.HomeFragment;
 import com.azsocial.fragments.NewsFragment;
 import com.azsocial.fragments.ProfileFragment;
+import com.azsocial.fragments.SeachHeadLinesFragment;
 import com.azsocial.fragments.SearchSourceFragment;
 import com.azsocial.fragments.ShareFragment;
 import com.azsocial.utils.FragmentHistory;
@@ -275,7 +276,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
             case FragNavController.TAB2:
                 return new SearchSourceFragment();
             case FragNavController.TAB3:
-                return new ShareFragment();
+                return new SeachHeadLinesFragment();
             case FragNavController.TAB4:
                 return new NewsFragment();
             case FragNavController.TAB5:

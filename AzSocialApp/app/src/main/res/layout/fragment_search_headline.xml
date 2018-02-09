@@ -1,0 +1,170 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:gravity="center"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <!--<android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rlFilter"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/m_50dp"
+                android:paddingLeft="@dimen/screen_m_d14"
+                android:paddingRight="@dimen/screen_m_d14"
+
+                >
+
+                <TextView
+                    android:id="@+id/tvFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/merienda_one"
+                    android:gravity="left|center_vertical"
+                    android:text="Filter"
+                    android:textColor="@color/clrWhite"
+                    android:textSize="@dimen/text_14s"
+                    android:textStyle="bold"
+                    />
+
+                <ImageView
+                    android:id="@+id/ivArrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/sel_arrow_up_down"
+                    android:tint="@color/clrWhite"
+                    />
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:id="@+id/llFilter"
+                android:visibility="visible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/clrTrBlue20"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:id="@+id/tvCountry"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/m_8dp"
+                    android:layout_marginTop="@dimen/m_8dp"
+                    android:fontFamily="@font/comfortaa_light"
+                    android:gravity="center"
+                    android:text="All Country"
+                    android:textColor="@color/clrBlueDark"
+                    android:textSize="@dimen/text_12s" />
+
+                <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/recyclerViewCountry"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/m_60dp" />
+
+
+                <TextView
+                    android:id="@+id/tvLanguage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/m_8dp"
+                    android:layout_marginTop="@dimen/m_8dp"
+                    android:fontFamily="@font/comfortaa_light"
+                    android:gravity="center"
+                    android:text="All Languages"
+                    android:textColor="@color/clrBlueDark"
+                    android:textSize="@dimen/text_12s" />
+
+                <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/recyclerViewLanguage"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/m_60dp" />
+
+                <TextView
+                    android:id="@+id/tvCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/m_8dp"
+                    android:layout_marginTop="@dimen/m_8dp"
+                    android:fontFamily="@font/comfortaa_light"
+                    android:gravity="center"
+                    android:text="All Category"
+                    android:textColor="@color/clrBlueDark"
+                    android:textSize="@dimen/text_12s" />
+
+                <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/recyclerViewCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/m_50dp" />
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/clrBlue"
+                />
+
+            <com.cjj.MaterialRefreshLayout
+                android:id="@+id/materialRefreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/rlSearch">
+
+                <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    />
+            </com.cjj.MaterialRefreshLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llNodata"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:minHeight="100dp"
+            android:visibility="gone">
+
+            <include
+                layout="@layout/view_norecord_found"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true" />
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
