@@ -17,8 +17,8 @@
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/violet</item>
-        <item name="actionMenuTextColor">@color/violet</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="actionMenuTextColor">@color/white</item>
 
     </style>
 

@@ -15,7 +15,7 @@ import com.azsocial.fragments.BaseFragment;
 import com.azsocial.fragments.HomeFragment;
 import com.azsocial.fragments.NewsFragment;
 import com.azsocial.fragments.ProfileFragment;
-import com.azsocial.fragments.SearchFragment;
+import com.azsocial.fragments.SearchSourceFragment;
 import com.azsocial.fragments.ShareFragment;
 import com.azsocial.utils.FragmentHistory;
 import com.azsocial.utils.Utils;
@@ -104,6 +104,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
         });
 
     }
+
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
@@ -272,7 +273,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
             case FragNavController.TAB1:
                 return new HomeFragment();
             case FragNavController.TAB2:
-                return new SearchFragment();
+                return new SearchSourceFragment();
             case FragNavController.TAB3:
                 return new ShareFragment();
             case FragNavController.TAB4:

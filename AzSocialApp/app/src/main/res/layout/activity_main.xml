@@ -4,24 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chrome_grey"
+    android:background="@drawable/gradient_theme"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:titleTextColor="@color/black">
+        android:layout_height="wrap_content">
 
-    </android.support.v7.widget.Toolbar>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@drawable/bottom_shadow" />
+            app:titleTextColor="@color/black">
+
+        </android.support.v7.widget.Toolbar>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_alignBottom="@+id/toolbar"
+            android:background="@color/clrTrBlue20" />
+    </RelativeLayout>
 
 
     <FrameLayout
@@ -35,18 +41,31 @@
     </FrameLayout>
 
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@drawable/bottom_shadow" />
-
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/bottom_tab_layout"
-        style="@style/BottomTabLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/white" />
+        android:layout_weight="1">
+
+
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/bottom_tab_layout"
+            style="@style/BottomTabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/gradient_blue" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_alignTop="@+id/bottom_tab_layout"
+            android:background="@color/clrTrBlue20" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_alignBottom="@+id/bottom_tab_layout"
+            android:background="@color/clrTrBlue20" />
+
+    </RelativeLayout>
 
 </LinearLayout>

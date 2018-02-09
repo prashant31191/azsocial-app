@@ -9,14 +9,11 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,7 +49,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 
-public class SearchFragment extends BaseFragment {
+public class SearchSourceFragment extends BaseFragment {
 
 
     @BindView(R.id.etSearch)
@@ -96,25 +93,25 @@ public class SearchFragment extends BaseFragment {
     Request request;
     boolean isProgressVisible = false;
 
-    public static SearchFragment newInstance(int instance) {
+    public static SearchSourceFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
-        SearchFragment fragment = new SearchFragment();
+        SearchSourceFragment fragment = new SearchSourceFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static SearchFragment newInstance(Object object) {
+    public static SearchSourceFragment newInstance(Object object) {
         Bundle args = new Bundle();
         //args.putInt(ARGS_INSTANCE, instance);
         args.putSerializable(ARGS_INSTANCE, (Serializable) object);
-        SearchFragment fragment = new SearchFragment();
+        SearchSourceFragment fragment = new SearchSourceFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    public SearchFragment() {
+    public SearchSourceFragment() {
         // Required empty public constructor
     }
 

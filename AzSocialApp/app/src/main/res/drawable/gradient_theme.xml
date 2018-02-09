@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!--<gradient
+        android:centerX="50%"
+        android:centerY="50%"
+        android:endColor="#FFfe9a8b"
+        android:centerColor="#FFf9748f"
+        android:startColor="#FFf78ca0"
+        android:type="linear" />-->
+
+    <gradient
+        android:endColor="#F50057"
+        android:startColor="#ec8c69"
+        android:type="linear"
+        android:angle="45"
+        />
+
+</shape>
+
+    <!--
+
+
+
+    background-color: #E4E4E1;
+ background-image: radial-gradient(at top center, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.03) 100%), linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(143,152,157,0.60) 100%);
+ 	background-blend-mode: normal, multiply;
+
+    background-image: linear-gradient(-225deg, #A445B2 0%, #D41872 52%, #FF0066 100%);
+
+
+    background-image: linear-gradient(-225deg, #231557 0%, #44107A 29%, #FF1361 67%, #FFF800 100%);
+
+    -->
+    <!-- background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);-->
