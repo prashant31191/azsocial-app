@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+
+apply plugin: 'realm-android'
+
+apply plugin: 'io.fabric'
+
 android {
     compileSdkVersion 27
     buildToolsVersion "27.0.0"
@@ -20,6 +25,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+
+    // for the reduce size
+    // Some other configuration here...
+/*
+
+    splits {
+       */
+/* density {
+            enable true
+            reset()
+            include "mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"
+        }*//*
+
+
+        */
+/*abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi', 'armeabi-v7a', 'mips'
+            universalApk false
+        }*//*
+
+    }
+*/
+
+
 }
 
 
@@ -65,5 +98,27 @@ dependencies {
 
     // multi dex error resolve
     compile "com.android.support:multidex:$multidexVersion"
+
+
+// for the fabric crash analytic
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true;
+    }
+
+    // Fire base notification
+    compile "com.google.firebase:firebase-core:$gPlayServicesBasementVersion"
+    compile "com.google.firebase:firebase-auth:$gPlayServicesBasementVersion"
+
+    // for the analytics
+    compile "com.google.android.gms:play-services-analytics:$gPlayServicesBasementVersion"
+
+    // for the token and notification
+    compile "com.google.firebase:firebase-messaging:$gPlayServicesBasementVersion"
+
+    // for the google ads
+    compile "com.google.android.gms:play-services-ads:$gPlayServicesBasementVersion"
 }
+
+// Add to the bottom of the file
+apply plugin: 'com.google.gms.google-services'
 

@@ -35,6 +35,8 @@ import com.azsocial.utils.AppFlags;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.flurry.android.ads.FlurryAdInterstitial;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
@@ -42,6 +44,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +57,8 @@ import okhttp3.ResponseBody;
 
 
 public class HomeFragment extends BaseFragment {
+
+    String TAG = "HomeFragment";
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -88,7 +93,7 @@ public class HomeFragment extends BaseFragment {
 
 
     DataListAdapter dataListAdapter;
-    ArrayList<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
+    List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
     int page = 1;
@@ -141,38 +146,81 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        try {
 
-        ((MainActivity) getActivity()).updateToolbarTitle("Home");
+            ((MainActivity) getActivity()).updateToolbarTitle("Home");
 
 
-        if (recyclerView != null) {
-            //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-            GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
-            recyclerView.setLayoutManager(gridLayoutManager);
-            //recyclerView.setHasFixedSize(true);
+            if (recyclerView != null) {
+                //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
+                recyclerView.setLayoutManager(gridLayoutManager);
+                //recyclerView.setHasFixedSize(true);
+            }
+
+
+            if (recyclerViewCountry != null && recyclerViewLanguage != null && recyclerViewCategory != null) {
+                setStaticListHorizontalList();
+            }
+
+            initialization();
+
+            rlFilter.setSelected(false);
+            setFilterVisibility();
+
+            if (dataListAdapter == null) {
+                page = 1;
+                arrayListArticlesModel = new ArrayList<>();
+                asyncGetNewsList();
+            } else {
+                progressBar.setVisibility(View.GONE);
+                setStaticData(true);
+
+            }
+
+            setSendDataAnalytics();
         }
-
-
-        if (recyclerViewCountry != null && recyclerViewLanguage != null && recyclerViewCategory != null) {
-            setStaticListHorizontalList();
-        }
-
-        initialization();
-
-        rlFilter.setSelected(false);
-        setFilterVisibility();
-
-        if (dataListAdapter == null) {
-            page = 1;
-            arrayListArticlesModel = new ArrayList<>();
-            asyncGetNewsList();
-        } else {
-            progressBar.setVisibility(View.GONE);
-            setStaticData(true);
-
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
 
     }
+
+
+
+
+    private void setSendDataAnalytics() {
+        try {
+
+
+            FirebaseAnalytics mFirebaseAnalytics;
+            FirebaseAuth mFirebaseAuth;
+
+            // Initialize FirebaseAuth
+            mFirebaseAuth = FirebaseAuth.getInstance();
+            // Obtain the FirebaseAnalytics instance.
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+
+            App.showLog(TAG, "---FirebaseAnalytics.Event.SELECT_CONTENT------");
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "111");
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "AznewsApp");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "text");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+            App.showLog(TAG, "---FirebaseAnalytics.Event.SHARE------");
+            Bundle bundle2 = new Bundle();
+            bundle2.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "aznews article");
+            bundle2.putString(FirebaseAnalytics.Param.ITEM_ID, "az333");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, bundle);
+
+            mFirebaseAnalytics.setCurrentScreen(getActivity(), TAG, "setSendDataAnalytics");
+        } catch (Exception e) {
+            App.showLog(TAG, "---setSendDataAnalytics-Error send analytics--");
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -452,11 +500,11 @@ public class HomeFragment extends BaseFragment {
 
 
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
-        ArrayList<ArticlesModel> mArrListmPEArticleModel;
+        List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
 
 
-        public DataListAdapter(Context context, ArrayList<ArticlesModel> arrList) {
+        public DataListAdapter(Context context, List<ArticlesModel> arrList) {
             mArrListmPEArticleModel = arrList;
             mContext = context;
         }

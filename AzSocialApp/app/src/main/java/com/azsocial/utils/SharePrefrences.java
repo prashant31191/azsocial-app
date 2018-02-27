@@ -171,7 +171,7 @@ public class SharePrefrences {
         byte[] b = baos.toByteArray();
         String imageEncoded = Base64.encodeToString(b, Base64.DEFAULT);
 
-        Log.d("Image Log:", imageEncoded);
+        App.showLog("Image Log:", imageEncoded);
         return imageEncoded;
     }
 

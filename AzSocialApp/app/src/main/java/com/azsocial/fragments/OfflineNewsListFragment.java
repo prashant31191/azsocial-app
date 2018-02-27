@@ -9,12 +9,9 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,13 +22,12 @@ import com.azsocial.App;
 import com.azsocial.R;
 import com.azsocial.activities.MainActivity;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
+import com.azsocial.demo.news.recycler.newsapi.FilterModel;
 import com.azsocial.demo.news.recycler.newsapi.NewsHeadlinesResponse;
-import com.azsocial.demo.news.recycler.newsapi.TopHeadLinesResponse;
 import com.azsocial.fragments.sub.NewsDetailFragment;
 import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.flurry.android.ads.FlurryAdInterstitial;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -41,6 +37,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -54,15 +51,9 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 
-public class SearchSourceFragment extends BaseFragment {
+public class OfflineNewsListFragment extends BaseFragment {
 
-    String TAG = "SearchSourceFragment";
-
-    @BindView(R.id.etSearch)
-    EditText etSearch;
-
-    @BindView(R.id.ivSearch)
-    ImageView ivSearch;
+    String TAG = "OfflineNewsListFragment";
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -70,54 +61,50 @@ public class SearchSourceFragment extends BaseFragment {
     @BindView(R.id.materialRefreshLayout)
     MaterialRefreshLayout materialRefreshLayout;
 
+    @BindView(R.id.recyclerView)
+    RecyclerView recyclerView;
+
+    @BindView(R.id.rlFilter)
+    RelativeLayout rlFilter;
 
     @BindView(R.id.llNodata)
     LinearLayout llNodata;
 
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-
     @BindView(R.id.tvNodata)
     TextView tvNodata;
+
 
     DataListAdapter dataListAdapter;
     List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
-    String strFrom = "", strData = "", category_id = "";
     int page = 1;
-    FlurryAdInterstitial mFlurryAdInterstitial;
-    String strSearchKeyword = "top news";
-    String strTemp = "";
-
+    String strSourceId = "bbc-news";
+    String strSourceName = "Offline news";
     ArticlesModel mArticlesModel;
-
-    int fragCount;
+    FilterModel mFilterModel;
     Activity mActivity;
 
 
-    Request request;
-    boolean isProgressVisible = false;
-
-    public static SearchSourceFragment newInstance(int instance) {
+    public static OfflineNewsListFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
-        SearchSourceFragment fragment = new SearchSourceFragment();
+        OfflineNewsListFragment fragment = new OfflineNewsListFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static SearchSourceFragment newInstance(Object object) {
+    public static OfflineNewsListFragment newInstance(Object object) {
         Bundle args = new Bundle();
         //args.putInt(ARGS_INSTANCE, instance);
         args.putSerializable(ARGS_INSTANCE, (Serializable) object);
-        SearchSourceFragment fragment = new SearchSourceFragment();
+        OfflineNewsListFragment fragment = new OfflineNewsListFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    public SearchSourceFragment() {
+    public OfflineNewsListFragment() {
         // Required empty public constructor
     }
 
@@ -129,13 +116,10 @@ public class SearchSourceFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mActivity = getActivity();
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_headline, container, false);
 
         try {
 
@@ -147,29 +131,29 @@ public class SearchSourceFragment extends BaseFragment {
             if (args != null) {
                 Object obj = (Object) args.getSerializable(ARGS_INSTANCE);
 
-                if (obj instanceof Integer) {
-                    fragCount = (int) obj;
-                    //fragCount = args.getInt(ARGS_INSTANCE);
-                }
                 if (obj instanceof String) {
-                    strSearchKeyword = (String) obj;
+                    strSourceId = (String) obj;
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
                 if (obj instanceof ArticlesModel) {
                     mArticlesModel = (ArticlesModel) obj;
-                    //fragCount = args.getInt(ARGS_INSTANCE);
+                }
+                if (obj instanceof FilterModel) {
+                    mFilterModel = (FilterModel) obj;
                 }
 
                 if (mArticlesModel != null) {
                     App.showLog("====mArticlesModel====not null==");
 
                     if (StringUtils.isValidString(mArticlesModel.id) == true)
-                        strSearchKeyword = mArticlesModel.id;
+                        strSourceId = mArticlesModel.id;
 
+                    if (StringUtils.isValidString(mArticlesModel.name) == true)
+                        strSourceName = mArticlesModel.name;
                 }
 
-                App.showLog("==fragCount==" + fragCount);
-                App.showLog("==strSearchKeyword==" + strSearchKeyword);
+
+                App.showLog("==strSourceId==" + strSourceId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,11 +168,18 @@ public class SearchSourceFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         try {
+            if (StringUtils.isValidString(strSourceName) == true) {
+                ((MainActivity) getActivity()).updateToolbarTitle((strSourceName));
+            } else {
+                ((MainActivity) getActivity()).updateToolbarTitle(("Offline news"));
+            }
 
-            //((MainActivity) getActivity()).updateToolbarTitle((fragCount == 0) ? "Home" : "Sub Home " + fragCount);
-
-            ((MainActivity) getActivity()).updateToolbarTitle(("Search news"));
-
+            if (mFilterModel != null && StringUtils.isValidString(mFilterModel.strFilterKey)) {
+                App.showLog("====mFilterModel====not null==");
+                {
+                    ((MainActivity) getActivity()).updateToolbarTitle(("Top headline " + mFilterModel.strFilterKey + "(" + mFilterModel.strFilterValue + ")"));
+                }
+            }
 
             if (recyclerView != null) {
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -198,23 +189,17 @@ public class SearchSourceFragment extends BaseFragment {
             }
 
             initialization();
-            if (dataListAdapter == null) {
-                page = 1;
-                arrayListArticlesModel = new ArrayList<>();
-                asyncGetNewsList();
-            } else {
-                progressBar.setVisibility(View.GONE);
-                setStaticData(true);
+            arrayListArticlesModel = new ArrayList<>();
 
-            }
-         /*  initialization();
-          asyncGetNewsList();*/
+            setStaticData(true);
             setSendDataAnalytics();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
 
     private void setSendDataAnalytics() {
         try {
@@ -247,6 +232,7 @@ public class SearchSourceFragment extends BaseFragment {
         }
     }
 
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -262,19 +248,21 @@ public class SearchSourceFragment extends BaseFragment {
     private void initialization() {
         try {
 
+            progressBar.setVisibility(View.GONE);
+            rlFilter.setVisibility(View.GONE);
+            App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
 
             materialRefreshLayout.setIsOverLay(true);
             materialRefreshLayout.setWaveShow(true);
             materialRefreshLayout.setWaveColor(0x55ffffff);
-            materialRefreshLayout.setLoadMore(true);
+            materialRefreshLayout.setLoadMore(false);
 
             materialRefreshLayout.setMaterialRefreshListener(new MaterialRefreshListener() {
                 @Override
                 public void onRefresh(final MaterialRefreshLayout materialRefreshLayout) {
                     try {
-                        page = 1;
-                        arrayListArticlesModel = new ArrayList<>();
-                        asyncGetNewsList();
+                        progressBar.setVisibility(View.GONE);
+                        App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -284,10 +272,8 @@ public class SearchSourceFragment extends BaseFragment {
                 @Override
                 public void onRefreshLoadMore(MaterialRefreshLayout materialRefreshLayout) {
                     try {
-                        //materialRefreshLayout.setLoadMore(false);
-                        //App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-
-                        asyncGetNewsList();
+                        progressBar.setVisibility(View.GONE);
+                        App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -295,156 +281,9 @@ public class SearchSourceFragment extends BaseFragment {
                 }
             });
 
-            if (strSearchKeyword != null) {
-                etSearch.setText(strSearchKeyword);
-            }
-
-            ivSearch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    strSearchKeyword = etSearch.getText().toString().trim();
-
-                    if (strTemp.equalsIgnoreCase(strSearchKeyword)) {
-                        return;
-                    }
-
-                    if (strSearchKeyword.length() > 0) {
-                        App.hideSoftKeyboardMy(getActivity());
-                        strTemp = strSearchKeyword;
-                        performSearch();
-                    } else {
-                        App.hideSoftKeyboardMy(getActivity());
-                        App.showSnackBar(etSearch, "Please enter search text.");
-                    }
-                }
-            });
-
-            etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        ivSearch.performClick();
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void performSearch() {
-        try {
-            page = 1;
-            arrayListArticlesModel = new ArrayList<>();
-            isProgressVisible = true;
-            asyncGetNewsList();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void asyncGetNewsList() {
-        try {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-
-
-            OkHttpClient httpClient = new OkHttpClient();
-            //https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=462f5f3ede2841408e9ef575919befe5
-            String url = "https://newsapi.org/v2/everything?q=" + strSearchKeyword + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
-
-            if (request != null) {
-                httpClient.newCall(request).cancel();
-            }
-
-            if (isProgressVisible == true) {
-                isProgressVisible = false;
-                progressBar.setVisibility(View.VISIBLE);
-            }
-
-            request = new Request.Builder()
-                    .url(url)
-                    .build();
-
-            httpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    App.showLog("error in getting response using async okhttp call");
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                progressBar.setVisibility(View.GONE);
-                                App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-                            } catch (Exception e1) {
-                                e1.printStackTrace();
-                                progressBar.setVisibility(View.GONE);
-                                App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-                            }
-                        }
-                    });
-                }
-
-                @Override
-                public void onResponse(Call call, final Response response) throws IOException {
-                    final ResponseBody responseBody = response.body();
-
-                    mActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (!response.isSuccessful()) {
-                                    throw new IOException("Error response " + response);
-                                }
-
-                                String result = responseBody.string();
-                                App.showLog("=result==" + result);
-                                progressBar.setVisibility(View.GONE);
-                                if (result != null) {
-                                    App.showLog("==result==" + result.toString());
-
-                                    Gson gson = new GsonBuilder().create();
-                                    NewsHeadlinesResponse topHeadLinesResponse = gson.fromJson(result.toString(), NewsHeadlinesResponse.class);
-                                    App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-                                    if (topHeadLinesResponse != null && topHeadLinesResponse.arrayListArticlesModel != null) {
-                                        //arrayListArticlesModel = topHeadLinesResponse.arrayListArticlesModel;
-                                        if (page == 1) {
-                                            arrayListArticlesModel = topHeadLinesResponse.arrayListArticlesModel;
-                                        } else {
-                                            arrayListArticlesModel.addAll(topHeadLinesResponse.arrayListArticlesModel);
-                                        }
-                                        page = page + 1;
-                                        setStaticData(false);
-
-                                        Realm realm;
-                                        realm = Realm.getInstance(App.getRealmConfiguration());
-
-
-                                        App.insertArticlesModelList(realm,topHeadLinesResponse.arrayListArticlesModel);
-                                    } else {
-                                        materialRefreshLayout.setLoadMore(false);
-                                    }
-                                }
-
-                            } catch (Exception e1) {
-                                progressBar.setVisibility(View.GONE);
-                                App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
-                                e1.printStackTrace();
-                            }
-                        }
-                    });
-
-
-                }
-            });
 
 
         } catch (Exception e) {
-            progressBar.setVisibility(View.GONE);
-            App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
             e.printStackTrace();
         }
     }
@@ -456,9 +295,17 @@ public class SearchSourceFragment extends BaseFragment {
 
             App.showLog("=======setStaticData===");
 
+            Realm realm;
+            realm = Realm.getInstance(App.getRealmConfiguration());
+
+            arrayListArticlesModel = App.fetchArticlesModelList(realm);
+
+
             if (arrayListArticlesModel != null && arrayListArticlesModel.size() > 0) {
 
                 llNodata.setVisibility(View.GONE);
+
+
                 App.showLog("======set adapter=DataListAdapter==page=" + page);
 
                 if (dataListAdapter == null || page <= 2 || isSetAdapter == true) {
@@ -469,7 +316,6 @@ public class SearchSourceFragment extends BaseFragment {
                 } else {
                     dataListAdapter.notifyDataSetChanged();
                 }
-
 
             } else {
                 llNodata.setVisibility(View.VISIBLE);
@@ -509,7 +355,7 @@ public class SearchSourceFragment extends BaseFragment {
                 versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
                 versionViewHolder.tvTime.setText(mPEArticleModel.author);
 
-                versionViewHolder.tvDetail.setText(mPEArticleModel.description);
+                versionViewHolder.tvDetail.setText("#"+i+" "+mPEArticleModel.description);
                 versionViewHolder.tvLink.setText(mPEArticleModel.url);
 
                 if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
@@ -552,12 +398,6 @@ public class SearchSourceFragment extends BaseFragment {
                 versionViewHolder.cvItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                      /*
-                        Intent intent= new Intent(mActivity,ActNewsDetail.class);
-                        intent.putExtra(AppFlags.tagArticlesModel,mArrListmPEArticleModel.get(i));
-                        mActivity.startActivity(intent);
-                        */
 
                         if (mArrListmPEArticleModel.get(i) != null && mFragmentNavigation != null) {
                             mFragmentNavigation.pushFragment(NewsDetailFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));

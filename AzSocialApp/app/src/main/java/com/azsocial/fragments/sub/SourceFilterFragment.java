@@ -36,6 +36,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +67,7 @@ public class SourceFilterFragment extends BaseFragment {
     TextView tvNodata;
 
     DataListAdapter dataListAdapter;
-    ArrayList<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
+    List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
     int page = 1;
@@ -346,11 +347,11 @@ public class SourceFilterFragment extends BaseFragment {
 
 
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
-        ArrayList<ArticlesModel> mArrListmPEArticleModel;
+        List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
 
 
-        public DataListAdapter(Context context, ArrayList<ArticlesModel> arrList) {
+        public DataListAdapter(Context context, List<ArticlesModel> arrList) {
             mArrListmPEArticleModel = arrList;
             mContext = context;
         }

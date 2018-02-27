@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.fragments.BaseFragment;
 import com.azsocial.utils.StringUtils;
 import com.azsocial.utils.TouchImageView;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
@@ -29,25 +32,37 @@ import butterknife.ButterKnife;
 public class NewsDetailFragment extends BaseFragment {
 
 
-
+    String TAG = "NewsDetailFragment";
     Activity mActivity;
 
-    @BindView(R.id.tvTitle) TextView tvTitle;
-    @BindView(R.id.tvDate) TextView tvDate;
-    @BindView(R.id.tvTime) TextView tvTime;
-    @BindView(R.id.tvDetail) TextView tvDetail;
-    @BindView(R.id.tvLink) TextView tvLink;
+    @BindView(R.id.tvTitle)
+    TextView tvTitle;
+    @BindView(R.id.tvDate)
+    TextView tvDate;
+    @BindView(R.id.tvTime)
+    TextView tvTime;
+    @BindView(R.id.tvDetail)
+    TextView tvDetail;
+    @BindView(R.id.tvLink)
+    TextView tvLink;
 
-    @BindView(R.id.ivPhoto) TouchImageView ivPhoto;
-    @BindView(R.id.ivClose) ImageView ivClose;
-    @BindView(R.id.ivPhoto2) ImageView ivPhoto2;
-    @BindView(R.id.ivFavourite) ImageView ivFavourite;
+    @BindView(R.id.ivPhoto)
+    TouchImageView ivPhoto;
+    @BindView(R.id.ivClose)
+    ImageView ivClose;
+    @BindView(R.id.ivPhoto2)
+    ImageView ivPhoto2;
+    @BindView(R.id.ivFavourite)
+    ImageView ivFavourite;
 
-    @BindView(R.id.rlMain) RelativeLayout rlMain;
-    @BindView(R.id.rlImageFullView) RelativeLayout rlImageFullView;
-    @BindView(R.id.nsvData) NestedScrollView nsvData;
+    @BindView(R.id.rlMain)
+    RelativeLayout rlMain;
+    @BindView(R.id.rlImageFullView)
+    RelativeLayout rlImageFullView;
+    @BindView(R.id.nsvData)
+    NestedScrollView nsvData;
 
-    ArticlesModel  mArticlesModel;
+    ArticlesModel mArticlesModel;
 
     public static NewsDetailFragment newInstance(Object object) {
         Bundle args = new Bundle();
@@ -83,9 +98,9 @@ public class NewsDetailFragment extends BaseFragment {
             Bundle args = getArguments();
             if (args != null) {
                 Object obj = (Object) args.getSerializable(ARGS_INSTANCE);
-                
+
                 if (obj instanceof ArticlesModel) {
-                     mArticlesModel = (ArticlesModel) obj;
+                    mArticlesModel = (ArticlesModel) obj;
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
             }
@@ -100,23 +115,58 @@ public class NewsDetailFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        try {
+            if (mArticlesModel != null) {
+                if (StringUtils.isValidString(mArticlesModel.title) == true) {
+                    ((MainActivity) getActivity()).updateToolbarTitle((mArticlesModel.title));
+                } else {
+                    ((MainActivity) getActivity()).updateToolbarTitle(("News detail"));
+                }
 
-        if(mArticlesModel !=null){
-            if (StringUtils.isValidString(mArticlesModel.title) == true) {
-                ((MainActivity) getActivity()).updateToolbarTitle((mArticlesModel.title));
-            }
-            else
-            {
+                setStaticData(true);
+            } else {
                 ((MainActivity) getActivity()).updateToolbarTitle(("News detail"));
             }
 
-            setStaticData(true);            
-        }
-        else
-        {
-            ((MainActivity) getActivity()).updateToolbarTitle(("News detail"));
+            setSendDataAnalytics();
+        } catch (Exception e) {
+            App.showLog(TAG, "---onViewCreated--");
+            e.printStackTrace();
         }
     }
+
+
+    private void setSendDataAnalytics() {
+        try {
+
+
+            FirebaseAnalytics mFirebaseAnalytics;
+            FirebaseAuth mFirebaseAuth;
+
+            // Initialize FirebaseAuth
+            mFirebaseAuth = FirebaseAuth.getInstance();
+            // Obtain the FirebaseAnalytics instance.
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+
+            App.showLog(TAG, "---FirebaseAnalytics.Event.SELECT_CONTENT------");
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, "111");
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "AznewsApp");
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "text");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+            App.showLog(TAG, "---FirebaseAnalytics.Event.SHARE------");
+            Bundle bundle2 = new Bundle();
+            bundle2.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "aznews article");
+            bundle2.putString(FirebaseAnalytics.Param.ITEM_ID, "az333");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, bundle);
+
+            mFirebaseAnalytics.setCurrentScreen(getActivity(), TAG, "setSendDataAnalytics");
+        } catch (Exception e) {
+            App.showLog(TAG, "---setSendDataAnalytics-Error send analytics--");
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -128,7 +178,6 @@ public class NewsDetailFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
-
 
 
     private void setStaticData(boolean isSetAdapter) {
@@ -189,23 +238,17 @@ public class NewsDetailFragment extends BaseFragment {
         }
     }
 
-    private void setFullView(boolean isOpen)
-    {
-        try{
-            if(isOpen == true)
-            {
+    private void setFullView(boolean isOpen) {
+        try {
+            if (isOpen == true) {
                 rlImageFullView.setVisibility(View.VISIBLE);
                 nsvData.setVisibility(View.GONE);
-            }
-            else
-            {
+            } else {
                 rlImageFullView.setVisibility(View.GONE);
                 nsvData.setVisibility(View.VISIBLE);
             }
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -33,6 +33,7 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,7 +63,7 @@ public class ActNewsChannelsListing extends AppCompatActivity {
     TextView tvNodata;
 
     DataListAdapter dataListAdapter;
-    ArrayList<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
+    List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
     String strFrom = "", strData = "", category_id = "";
@@ -306,11 +307,11 @@ public class ActNewsChannelsListing extends AppCompatActivity {
 
 
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
-        ArrayList<ArticlesModel> mArrListmPEArticleModel;
+        List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
 
 
-        public DataListAdapter(Context context, ArrayList<ArticlesModel> arrList) {
+        public DataListAdapter(Context context, List<ArticlesModel> arrList) {
             mArrListmPEArticleModel = arrList;
             mContext = context;
         }

@@ -14,6 +14,7 @@ import com.azsocial.R;
 import com.azsocial.fragments.BaseFragment;
 import com.azsocial.fragments.HomeFragment;
 import com.azsocial.fragments.NewsFragment;
+import com.azsocial.fragments.OfflineNewsListFragment;
 import com.azsocial.fragments.ProfileFragment;
 import com.azsocial.fragments.SeachHeadLinesFragment;
 import com.azsocial.fragments.SearchSourceFragment;
@@ -278,7 +279,7 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
             case FragNavController.TAB3:
                 return new SeachHeadLinesFragment();
             case FragNavController.TAB4:
-                return new NewsFragment();
+                return new OfflineNewsListFragment(); //NewsFragment
             case FragNavController.TAB5:
                 return new ProfileFragment();
 

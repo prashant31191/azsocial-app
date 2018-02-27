@@ -30,9 +30,12 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -59,7 +62,7 @@ public class ActNewsListing extends AppCompatActivity {
     TextView tvNodata;
 
     DataListAdapter dataListAdapter;
-    ArrayList<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
+    List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
     String strFrom = "", strData = "", category_id = "";
@@ -210,6 +213,12 @@ public class ActNewsListing extends AppCompatActivity {
 
                                         page = page + 1;
                                         setStaticData();
+
+                                        Realm realm;
+                                        realm = Realm.getInstance(App.getRealmConfiguration());
+
+                                        App.insertArticlesModelList(realm,newsHeadlinesResponse.arrayListArticlesModel);
+
                                     }
                                     else
                                     {
@@ -268,11 +277,11 @@ public class ActNewsListing extends AppCompatActivity {
 
 
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
-        ArrayList<ArticlesModel> mArrListmPEArticleModel;
+        List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
 
 
-        public DataListAdapter(Context context, ArrayList<ArticlesModel> arrList) {
+        public DataListAdapter(Context context, List<ArticlesModel> arrList) {
             mArrListmPEArticleModel = arrList;
             mContext = context;
         }

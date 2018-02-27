@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.multidex.MultiDex;
+import android.support.v7.widget.GridLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -25,19 +26,30 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.azsocial.demo.alarm.AlarmManagerBroadcastReceiver;
+import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.utils.AdsUtils;
 import com.azsocial.utils.SharePrefrences;
 import com.cjj.MaterialRefreshLayout;
+import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.fabric.sdk.android.Fabric;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 /**
  * Created by prashant.chovatiya on 1/12/2018.
@@ -60,6 +72,10 @@ public class App extends Application {
     public static String strPrevTime = "";
     public static String strNewsApiKey = "462f5f3ede2841408e9ef575919befe5";
 
+    //for the realm database encryption and decryption key
+    public static String RealmEncryptionKey = "f263575e7b00a977a8e915feb9bfb2f992b2b8f11eaaaaaaa46523132131689465413132132165469487987987643545465464abbbbbccdddffff111222333";
+    public static RealmConfiguration realmConfiguration;
+
     // class for the share pref keys and valyes get set
     public static SharePrefrences sharePrefrences;
 
@@ -76,6 +92,10 @@ public class App extends Application {
             MultiDex.install(this);
             mContext = getApplicationContext();
             sharePrefrences = new SharePrefrences(App.this);
+
+            Realm.init(this);
+            Fabric.with(this, new Crashlytics());
+            realmConfiguration = getRealmConfiguration();
 
         /*    new FlurryAgent.Builder()
                     .withLogEnabled(true)
@@ -104,6 +124,108 @@ public class App extends Application {
     }
 
 
+    // FOR THE DATABASE
+
+
+    public static RealmConfiguration getRealmConfiguration()
+    {
+        if(realmConfiguration !=null)
+        {
+            return realmConfiguration;
+        }
+        else
+        {
+/*
+
+            realmConfiguration = new RealmConfiguration.Builder()
+                    .encryptionKey(App.getEncryptRawKey())
+                    .build();
+*/
+
+
+            realmConfiguration = new RealmConfiguration.Builder()
+                    .deleteRealmIfMigrationNeeded()
+                    .encryptionKey(App.getEncryptRawKey())
+                    .build();
+
+
+            return realmConfiguration;
+        }
+    }
+
+
+    // for the encrypt Encrypt
+    public static byte[] getEncryptRawKey() {
+
+        try {
+            /*byte[] bytes64Key = App.RealmEncryptionKey.getBytes("UTF-8");
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            sr.setSeed(bytes64Key);
+            kgen.init(128, sr);
+            SecretKey skey = kgen.generateKey();
+            byte[] raw = skey.getEncoded();*/
+
+            byte[] key = new BigInteger(App.RealmEncryptionKey,16).toByteArray();
+            return key;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
+    public static boolean checkDbFileIsExist() {
+        try {
+            App.showLog("=======checkDbFileIsExist=====");
+
+
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)  + File.separator + "download.realm");
+            if (file.exists()) {
+                //Do something
+                return true;
+            } else {
+                // Do something else.
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean deleteFile()
+    {
+        App.showLog("=======deleteFile=====");
+
+        try {
+
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator +  "download.realm");
+            if (file.exists()) {
+                //Do something
+                file.delete();
+
+                return true;
+            } else {
+                // Do something else.
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public static boolean renameFile(File from, File to) {
+        return from.getParentFile().exists() && from.exists() && from.renameTo(to);
+    }
+
+
+
     public static void showSnackBar(View view, String strMessage) {
         Snackbar snackbar = Snackbar.make(view, strMessage, Snackbar.LENGTH_SHORT);
         View snackbarView = snackbar.getView();
@@ -119,19 +241,19 @@ public class App extends Application {
 
 
     public static void showLog(String strMessage) {
-        Log.d("==App==", "--strMessage--" + strMessage);
+        App.showLog("==App==", "--strMessage--" + strMessage);
     }
 
 
     public static void showLogApi(String strMessage) {
         //Log.v("==App==", "--strMessage--" + strMessage);
-        Log.d("==App==", "--API-MESSAGE--" + strMessage);
+        App.showLog("==App==", "--API-MESSAGE--" + strMessage);
 
         //  appendLogApi("c_api", strMessage);
     }
 
     public static void showLogApi(String strOP, String strMessage) {
-        Log.d("==App=strOP=" + strOP, "--strMessage--" + strMessage);
+        App.showLog("==App=strOP=" + strOP, "--strMessage--" + strMessage);
 //        System.out.println("--API-strOP--" + strOP);
         //      System.out.println("--API-MESSAGE--" + strMessage);
 
@@ -142,14 +264,14 @@ public class App extends Application {
     public static void showLogApiRespose(String op, Response response) {
         //Log.w("=op==>" + op, "response==>");
         String strResponse = new Gson().toJson(response.body());
-        Log.d("=op==>" + op, "response==>" + strResponse);
+        App.showLog("=op==>" + op, "response==>" + strResponse);
         // appendLogApi(op + "_r_api", strResponse);
     }
 */
 
 
     public static void showLogResponce(String strTag, String strResponse) {
-        Log.d("==App==strTag==" + strTag, "--strResponse--" + strResponse);
+        App.showLog("==App==strTag==" + strTag, "--strResponse--" + strResponse);
         //appendLogApi(strTag + "_r_api", strResponse);
     }
 
@@ -486,5 +608,100 @@ public class App extends Application {
         }
     }
 
+
+
+    // for the database save and get
+/*
+
+    public static void insertGsonResponseWallpaperList(Realm realm, GsonResponseWallpaperList gsonResponseWallpaperList) {
+        try {
+            App.showLog("========insertWallpaper=====");
+
+
+            realm.beginTransaction();
+            GsonResponseWallpaperList realmDJsonDashboardModel = realm.copyToRealm(gsonResponseWallpaperList);
+            realm.commitTransaction();
+
+            getDataWallpaper(realm);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                realm.commitTransaction();
+            }
+            catch (Exception e2)
+            {e2.printStackTrace();}
+        }
+
+    }
+
+    public static void getGsonResponseWallpaperList(Realm realm) {
+        try {
+            App.showLog("========getDataWallpaper=====");
+            ArrayList<GsonResponseWallpaperList> arrGsonResponseWallpaperList = new ArrayList<>();
+
+            RealmResults<GsonResponseWallpaperList> arrDLocationModel = realm.where(GsonResponseWallpaperList.class).findAll();
+            App.sLog("===arrDLocationModel==" + arrDLocationModel);
+            List<GsonResponseWallpaperList> gsonResponseWallpaperList = arrDLocationModel;
+            arrGsonResponseWallpaperList = new ArrayList<GsonResponseWallpaperList>(gsonResponseWallpaperList);
+
+            for (int k = 0; k < arrGsonResponseWallpaperList.size(); k++) {
+                App.showL(k + "===arrGsonResponseWallpaperList=name=" + arrGsonResponseWallpaperList.get(k).filename);
+
+                App.sLog(k + "===arrGsonResponseWallpaperList=size=" + arrGsonResponseWallpaperList.get(k).arrayListJsonImageModel.size());
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+*/
+
+    public static void insertArticlesModelList(Realm realm, List<ArticlesModel> listArticlesModel) {
+        try {
+            App.showLog("========insertArticlesModelList=====");
+            if (listArticlesModel != null) {
+
+                if(realm.isInTransaction()==false) {
+                    realm.beginTransaction();
+                }
+                Collection<ArticlesModel> realmDJsonDashboardModel = realm.copyToRealm(listArticlesModel);
+                realm.commitTransaction();
+
+                //getDataDashboard();
+
+            } else {
+                App.showLog("===insertArticlesModelList ==null==no insert database==");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static List<ArticlesModel>  fetchArticlesModelList(Realm realm) {
+        try {
+            App.showLog("========fetchArticlesModelList=====");
+
+            RealmResults<ArticlesModel> resultsList = realm.where(ArticlesModel.class).findAll();
+            App.showLog("===arrDLocationModel==" + resultsList);
+            List<ArticlesModel> listArticlesModel = resultsList;
+            listArticlesModel = new ArrayList<ArticlesModel>(listArticlesModel);
+
+            if (listArticlesModel != null) {
+                App.showLog("====listArticlesModel===" + listArticlesModel.size());
+                return listArticlesModel;
+            }
+            else
+            {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 
 }

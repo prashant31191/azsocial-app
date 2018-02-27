@@ -212,7 +212,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select message from " + DatabaseHelper.TABLE_ALERT, null);
 
-        //Log.d("data", "fetched successfully ");
+        //App.showLog("data", "fetched successfully ");
         return res;
     }
 
@@ -247,7 +247,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-        //Log.d("data", "deleted successfully ");
+        //App.showLog("data", "deleted successfully ");
         return res;
     }
 
