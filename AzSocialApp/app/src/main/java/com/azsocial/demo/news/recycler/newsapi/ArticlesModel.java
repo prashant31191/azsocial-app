@@ -53,4 +53,7 @@ public class ArticlesModel extends RealmObject  implements Serializable {
     @SerializedName("country")
     public String country="";
 
+    @SerializedName("favourite")
+    public String favourite="0";
+
 }

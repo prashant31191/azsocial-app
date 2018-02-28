@@ -127,14 +127,10 @@ public class App extends Application {
     // FOR THE DATABASE
 
 
-    public static RealmConfiguration getRealmConfiguration()
-    {
-        if(realmConfiguration !=null)
-        {
+    public static RealmConfiguration getRealmConfiguration() {
+        if (realmConfiguration != null) {
             return realmConfiguration;
-        }
-        else
-        {
+        } else {
 /*
 
             realmConfiguration = new RealmConfiguration.Builder()
@@ -166,16 +162,13 @@ public class App extends Application {
             SecretKey skey = kgen.generateKey();
             byte[] raw = skey.getEncoded();*/
 
-            byte[] key = new BigInteger(App.RealmEncryptionKey,16).toByteArray();
+            byte[] key = new BigInteger(App.RealmEncryptionKey, 16).toByteArray();
             return key;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-
 
 
     public static boolean checkDbFileIsExist() {
@@ -183,7 +176,7 @@ public class App extends Application {
             App.showLog("=======checkDbFileIsExist=====");
 
 
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)  + File.separator + "download.realm");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + "download.realm");
             if (file.exists()) {
                 //Do something
                 return true;
@@ -197,13 +190,12 @@ public class App extends Application {
         }
     }
 
-    public static boolean deleteFile()
-    {
+    public static boolean deleteFile() {
         App.showLog("=======deleteFile=====");
 
         try {
 
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator +  "download.realm");
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + File.separator + "download.realm");
             if (file.exists()) {
                 //Do something
                 file.delete();
@@ -223,7 +215,6 @@ public class App extends Application {
     public static boolean renameFile(File from, File to) {
         return from.getParentFile().exists() && from.exists() && from.renameTo(to);
     }
-
 
 
     public static void showSnackBar(View view, String strMessage) {
@@ -524,31 +515,30 @@ public class App extends Application {
 
 
     public static void collapse(final View v) {
-        try{
-        final int initialHeight = v.getMeasuredHeight();
+        try {
+            final int initialHeight = v.getMeasuredHeight();
 
-        Animation a = new Animation() {
-            @Override
-            protected void applyTransformation(float interpolatedTime, Transformation t) {
-                if (interpolatedTime == 1) {
-                    v.setVisibility(View.GONE);
-                } else {
-                    v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
-                    v.requestLayout();
+            Animation a = new Animation() {
+                @Override
+                protected void applyTransformation(float interpolatedTime, Transformation t) {
+                    if (interpolatedTime == 1) {
+                        v.setVisibility(View.GONE);
+                    } else {
+                        v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
+                        v.requestLayout();
+                    }
                 }
-            }
 
-            @Override
-            public boolean willChangeBounds() {
-                return true;
-            }
-        };
+                @Override
+                public boolean willChangeBounds() {
+                    return true;
+                }
+            };
 
-        // 1dp/ms
-        a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
-        v.startAnimation(a);
-        }catch (Exception e)
-        {
+            // 1dp/ms
+            a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+            v.startAnimation(a);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -609,7 +599,6 @@ public class App extends Application {
     }
 
 
-
     // for the database save and get
 /*
 
@@ -619,7 +608,7 @@ public class App extends Application {
 
 
             realm.beginTransaction();
-            GsonResponseWallpaperList realmDJsonDashboardModel = realm.copyToRealm(gsonResponseWallpaperList);
+            GsonResponseWallpaperList articlesModel = realm.copyToRealm(gsonResponseWallpaperList);
             realm.commitTransaction();
 
             getDataWallpaper(realm);
@@ -662,10 +651,11 @@ public class App extends Application {
             App.showLog("========insertArticlesModelList=====");
             if (listArticlesModel != null) {
 
-                if(realm.isInTransaction()==false) {
+                if (realm.isInTransaction() == false) {
                     realm.beginTransaction();
                 }
-                Collection<ArticlesModel> realmDJsonDashboardModel = realm.copyToRealm(listArticlesModel);
+                //Collection<ArticlesModel> articlesModel = realm.copyToRealm(listArticlesModel);
+                Collection<ArticlesModel> articlesModel = realm.copyToRealmOrUpdate(listArticlesModel);
                 realm.commitTransaction();
 
                 //getDataDashboard();
@@ -679,7 +669,7 @@ public class App extends Application {
     }
 
 
-    public static List<ArticlesModel>  fetchArticlesModelList(Realm realm) {
+    public static List<ArticlesModel> fetchArticlesModelList(Realm realm) {
         try {
             App.showLog("========fetchArticlesModelList=====");
 
@@ -691,9 +681,7 @@ public class App extends Application {
             if (listArticlesModel != null) {
                 App.showLog("====listArticlesModel===" + listArticlesModel.size());
                 return listArticlesModel;
-            }
-            else
-            {
+            } else {
                 return null;
             }
 
@@ -702,6 +690,125 @@ public class App extends Application {
             return null;
         }
 
+    }
+
+
+    //Upate for like &  unlike
+
+    public static void addToFavouriteNews(Realm realm, ArticlesModel mArticlesModel) {
+        try {
+            App.showLog("========insert-set-as-favourite=====");
+
+
+            realm.beginTransaction();
+            mArticlesModel.favourite = "1";
+           // ArticlesModel articlesModel = realm.copyToRealm(mArticlesModel);
+            ArticlesModel articlesModel = realm.copyToRealmOrUpdate(mArticlesModel);
+            realm.commitTransaction();
+
+            //getAllFavouriteOfflineNews(realm);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                realm.commitTransaction();
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    public static void removeFromFavouriteNews(Realm realm, ArticlesModel mArticlesModel) {
+        try {
+            App.showLog("========insert-set-as-favourite=====");
+
+
+            realm.beginTransaction();
+            mArticlesModel.favourite = "0";
+           // ArticlesModel articlesModel = realm.copyToRealm(mArticlesModel);
+            ArticlesModel articlesModel = realm.copyToRealmOrUpdate(mArticlesModel);
+            realm.commitTransaction();
+
+            //getAllFavouriteOfflineNews(realm);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                realm.commitTransaction();
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+    }
+
+    public static void removeFromOfflineNews(Realm realm, ArticlesModel articlesModel) {
+        try {
+
+            App.showLog("========insert-set-as-favourite=====");
+            realm.beginTransaction();
+
+            RealmResults<ArticlesModel> arrDLocationModel;
+            if (articlesModel.description != null && articlesModel.description.length() > 0) {
+                arrDLocationModel = realm.where(ArticlesModel.class)
+                        .beginGroup()
+                        .equalTo("description", articlesModel.description)
+                        // .equalTo("Exchange",mArticlesModel.Exchange)
+                        .endGroup()
+                        .findAll();
+            } else {
+                arrDLocationModel = realm.where(ArticlesModel.class)
+                        .beginGroup()
+                        .equalTo("description", articlesModel.description)
+                        .endGroup()
+                        .findAll();
+
+            }
+
+           /* RealmResults<StocklistItemListResponse> arrDLocationModel = realm.where(StocklistItemListResponse.class)
+                    .beginGroup()
+                    .equalTo("Symbol", mArticlesModel.Symbol)
+                    .equalTo("Exchange",mArticlesModel.Exchange)
+                    .or()
+                    .equalTo("Exchange","")
+                    *//*.or()
+                    .contains("name", "Jo")*//*
+                    .endGroup()
+
+                    .findAll();*/
+
+            arrDLocationModel.deleteAllFromRealm();
+            realm.commitTransaction();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<ArticlesModel> getAllFavouriteOfflineNews(Realm realm) {
+        try {
+            App.showLog("========getDataWallpaper=====");
+            List<ArticlesModel> arrListArticlesModel = new ArrayList<>();
+
+            RealmResults<ArticlesModel> arrDLocationModel = realm.where(ArticlesModel.class)
+                    .beginGroup()
+                    .equalTo("favourite", "1")
+                    .endGroup()
+                    .findAll();
+            App.showLog("===arrDLocationModel==" + arrDLocationModel);
+            List<ArticlesModel> gsonResponseWallpaperList = arrDLocationModel;
+            arrListArticlesModel = new ArrayList<ArticlesModel>(gsonResponseWallpaperList);
+
+            for (int k = 0; k < arrListArticlesModel.size(); k++) {
+                App.showLog(k + "===ArticlesModel=title=" + arrListArticlesModel.get(k).title);
+                App.showLog(k + "===ArticlesModel=description=" + arrListArticlesModel.get(k).description);
+                App.showLog(k + "===ArticlesModel=favourite=" + arrListArticlesModel.get(k).favourite);
+            }
+
+            return  arrListArticlesModel;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

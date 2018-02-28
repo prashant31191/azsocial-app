@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.azsocial.R;
 import com.azsocial.fragments.BaseFragment;
+import com.azsocial.fragments.FavouriteNewsListFragment;
 import com.azsocial.fragments.HomeFragment;
 import com.azsocial.fragments.NewsFragment;
 import com.azsocial.fragments.OfflineNewsListFragment;
@@ -279,11 +280,10 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
             case FragNavController.TAB3:
                 return new SeachHeadLinesFragment();
             case FragNavController.TAB4:
-                return new OfflineNewsListFragment(); //NewsFragment
+                return new FavouriteNewsListFragment(); //NewsFragment
             case FragNavController.TAB5:
-                return new ProfileFragment();
-
-
+                return new OfflineNewsListFragment();
+                //return new ProfileFragment();
         }
         throw new IllegalStateException("Need to send an index that we know");
     }

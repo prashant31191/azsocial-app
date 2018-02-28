@@ -3,6 +3,7 @@ package com.azsocial.fragments.sub;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +28,7 @@ import java.io.Serializable;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 
 
 public class NewsDetailFragment extends BaseFragment {
@@ -62,7 +64,11 @@ public class NewsDetailFragment extends BaseFragment {
     @BindView(R.id.nsvData)
     NestedScrollView nsvData;
 
+    @BindView(R.id.fabFavourite)
+    FloatingActionButton fabFavourite;
+
     ArticlesModel mArticlesModel;
+    Realm realm;
 
     public static NewsDetailFragment newInstance(Object object) {
         Bundle args = new Bundle();
@@ -184,6 +190,8 @@ public class NewsDetailFragment extends BaseFragment {
         try {
 
 
+            realm = Realm.getInstance(App.getRealmConfiguration());
+
             App.showLog("=======setStaticData===");
 
             tvTitle.setText(mArticlesModel.title);
@@ -218,6 +226,46 @@ public class NewsDetailFragment extends BaseFragment {
             } else {
                 ivPhoto2.setVisibility(View.GONE);
             }
+
+
+            fabFavourite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+             /*   if (searchView != null) {
+                    searchView.setIconifiedByDefault(true);
+                    searchView.requestFocus();
+                }*/
+
+                    if (view.isSelected() == true) {
+                        App.showLog("=====fav added----Remove==");
+                        if (realm != null) {
+                            view.setSelected(false);
+                            fabFavourite.setImageResource(R.drawable.ic_star_border_black_24dp);
+                            App.removeFromFavouriteNews(realm, mArticlesModel);
+                        }
+                    } else {
+                        App.showLog("=====fav not added----Add==");
+
+                        if (realm != null) {
+                            view.setSelected(true);
+                            fabFavourite.setImageResource(R.drawable.ic_star_black_24dp);
+                            App.addToFavouriteNews(realm, mArticlesModel);
+                        }
+                    }
+                }
+            });
+
+
+            if (mArticlesModel.favourite.equalsIgnoreCase("1")) {
+                fabFavourite.setSelected(true);
+                fabFavourite.setImageResource(R.drawable.ic_star_black_24dp);
+            }
+            else
+            {
+                fabFavourite.setSelected(false);
+                fabFavourite.setImageResource(R.drawable.ic_star_border_black_24dp);
+            }
+
 
             ivPhoto2.setOnClickListener(new View.OnClickListener() {
                 @Override

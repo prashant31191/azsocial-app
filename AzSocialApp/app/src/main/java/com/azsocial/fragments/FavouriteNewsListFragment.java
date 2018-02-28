@@ -3,7 +3,6 @@ package com.azsocial.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -23,37 +22,26 @@ import com.azsocial.R;
 import com.azsocial.activities.MainActivity;
 import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.demo.news.recycler.newsapi.FilterModel;
-import com.azsocial.demo.news.recycler.newsapi.NewsHeadlinesResponse;
 import com.azsocial.fragments.sub.NewsDetailFragment;
 import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 
-public class OfflineNewsListFragment extends BaseFragment {
+public class FavouriteNewsListFragment extends BaseFragment {
 
-    String TAG = "OfflineNewsListFragment";
+    String TAG = "FavouriteNewsListFragment";
 
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
@@ -83,31 +71,31 @@ public class OfflineNewsListFragment extends BaseFragment {
 
     int page = 1;
     String strSourceId = "bbc-news";
-    String strSourceName = "Offline news";
+    String strSourceName = "Favourite news";
     ArticlesModel mArticlesModel;
     FilterModel mFilterModel;
     Activity mActivity;
 
 
-    public static OfflineNewsListFragment newInstance(int instance) {
+    public static FavouriteNewsListFragment newInstance(int instance) {
         Bundle args = new Bundle();
         args.putInt(ARGS_INSTANCE, instance);
-        OfflineNewsListFragment fragment = new OfflineNewsListFragment();
+        FavouriteNewsListFragment fragment = new FavouriteNewsListFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static OfflineNewsListFragment newInstance(Object object) {
+    public static FavouriteNewsListFragment newInstance(Object object) {
         Bundle args = new Bundle();
         //args.putInt(ARGS_INSTANCE, instance);
         args.putSerializable(ARGS_INSTANCE, (Serializable) object);
-        OfflineNewsListFragment fragment = new OfflineNewsListFragment();
+        FavouriteNewsListFragment fragment = new FavouriteNewsListFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    public OfflineNewsListFragment() {
+    public FavouriteNewsListFragment() {
         // Required empty public constructor
     }
 
@@ -174,7 +162,7 @@ public class OfflineNewsListFragment extends BaseFragment {
             if (StringUtils.isValidString(strSourceName) == true) {
                 ((MainActivity) getActivity()).updateToolbarTitle((strSourceName));
             } else {
-                ((MainActivity) getActivity()).updateToolbarTitle(("Offline news"));
+                ((MainActivity) getActivity()).updateToolbarTitle(("Favourite news"));
             }
 
             if (mFilterModel != null && StringUtils.isValidString(mFilterModel.strFilterKey)) {
@@ -302,7 +290,7 @@ public class OfflineNewsListFragment extends BaseFragment {
             Realm realm;
             realm = Realm.getInstance(App.getRealmConfiguration());
 
-            arrayListArticlesModel = App.fetchArticlesModelList(realm);
+            arrayListArticlesModel = App.getAllFavouriteOfflineNews(realm);
 
 
             if (arrayListArticlesModel != null && arrayListArticlesModel.size() > 0) {
