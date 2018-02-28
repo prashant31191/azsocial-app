@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/lay_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="250dp"
+        android:padding="@dimen/m_8dp"
+        android:orientation="vertical"
+        android:background="@color/clrWhite">
+
+
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/vDividerLine"
+            android:gravity="left"
+            android:layout_marginTop="@dimen/m_8dp"
+            android:paddingLeft="@dimen/m_8dp"
+            android:paddingRight="@dimen/m_8dp"
+            android:text="Are you sure you want to exit ?"
+            android:maxLines="10"
+            android:textColor="@color/txt_profile"
+            android:textSize="@dimen/text_16s"/>
+
+
+
+        <LinearLayout
+            android:id="@+id/lay_linear1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/m_8dp"
+            android:layout_gravity="right"
+            >
+
+            <TextView
+                android:id="@+id/tvCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/vDividerLine"
+                android:gravity="left"
+                android:paddingLeft="@dimen/screen_m_d14"
+                android:paddingRight="@dimen/screen_m_d14"
+                android:paddingTop="@dimen/m_8dp"
+                android:paddingBottom="@dimen/m_8dp"
+                android:text="NO"
+                android:textColor="@color/btn_txt_gray_color"
+                android:textSize="@dimen/text_18s"/>
+
+            <TextView
+                android:id="@+id/tvOk"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/vDividerLine"
+                android:gravity="left"
+                android:paddingLeft="@dimen/screen_m_d14"
+                android:paddingRight="@dimen/screen_m_d14"
+                android:paddingTop="@dimen/m_8dp"
+                android:paddingBottom="@dimen/m_8dp"
+                android:text="YES"
+
+                android:textColor="@color/btn_txt_theme_color"
+                android:textSize="@dimen/text_18s"
+            />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

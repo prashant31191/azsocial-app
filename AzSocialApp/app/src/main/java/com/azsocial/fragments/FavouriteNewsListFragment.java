@@ -2,6 +2,8 @@ package com.azsocial.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -24,6 +26,7 @@ import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.azsocial.demo.news.recycler.newsapi.FilterModel;
 import com.azsocial.fragments.sub.NewsDetailFragment;
 import com.azsocial.utils.StringUtils;
+import com.azsocial.utils.SwipeHelper;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -75,6 +78,8 @@ public class FavouriteNewsListFragment extends BaseFragment {
     ArticlesModel mArticlesModel;
     FilterModel mFilterModel;
     Activity mActivity;
+
+    Realm realm;
 
 
     public static FavouriteNewsListFragment newInstance(int instance) {
@@ -185,10 +190,85 @@ public class FavouriteNewsListFragment extends BaseFragment {
             setStaticData(true);
             setSendDataAnalytics();
 
+            initSwipe();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+    }
+
+    private void initSwipe()
+    {
+        try{
+            SwipeHelper swipeHelper = new SwipeHelper(getActivity(), recyclerView) {
+                @Override
+                public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                    underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            " Un-favourite ",
+                            0,
+                            Color.parseColor("#6e8bad"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(int pos) {
+                                    // TODO: onDelete
+
+                                    App.showLog("=Delete====pos=="+pos);
+
+                                    if(dataListAdapter !=null)
+                                    {
+                                        dataListAdapter.removeItem(pos);
+                                    }
+                                }
+                            }
+                    ));
+
+                   /* underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            "Transfer",
+                            0,
+                            Color.parseColor("#FF9502"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(int pos) {
+                                    // TODO: OnTransfer
+                                    App.showLog("=Transfer====pos=="+pos);
+                                }
+                            }
+                    ));*/
+                    underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            " Share ",
+                            0,
+                            Color.parseColor("#0e3f77"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(int pos) {
+                                    // TODO: OnUnshare
+                                    App.showLog("=share====pos=="+pos);
+
+
+                                    if(arrayListArticlesModel !=null && arrayListArticlesModel.get(pos) !=null)
+                                    {
+                                        String strShareData =
+                                                arrayListArticlesModel.get(pos).title +" \n \n"+
+                                                arrayListArticlesModel.get(pos).description +" \n \n"+
+                                                arrayListArticlesModel.get(pos).url ;
+
+                                        Intent sendIntent = new Intent();
+                                        sendIntent.setAction(Intent.ACTION_SEND);
+                                        sendIntent.putExtra(Intent.EXTRA_TEXT, strShareData);
+                                        sendIntent.setType("text/plain");
+                                        startActivity(sendIntent);
+                                    }
+
+                                }
+                            }
+                    ));
+                }
+            };
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
 
@@ -287,7 +367,7 @@ public class FavouriteNewsListFragment extends BaseFragment {
 
             App.showLog("=======setStaticData===");
 
-            Realm realm;
+
             realm = Realm.getInstance(App.getRealmConfiguration());
 
             arrayListArticlesModel = App.getAllFavouriteOfflineNews(realm);
@@ -411,8 +491,16 @@ public class FavouriteNewsListFragment extends BaseFragment {
 
 
         public void removeItem(int position) {
+            try {
+                App.removeFromFavouriteNews(realm, mArrListmPEArticleModel.get(position));
 
-
+                mArrListmPEArticleModel.remove(position);
+                notifyItemRemoved(position);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
 

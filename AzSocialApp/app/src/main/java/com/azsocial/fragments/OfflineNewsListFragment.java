@@ -1,17 +1,27 @@
 package com.azsocial.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -26,6 +36,7 @@ import com.azsocial.demo.news.recycler.newsapi.FilterModel;
 import com.azsocial.demo.news.recycler.newsapi.NewsHeadlinesResponse;
 import com.azsocial.fragments.sub.NewsDetailFragment;
 import com.azsocial.utils.StringUtils;
+import com.azsocial.utils.SwipeHelper;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -88,6 +99,9 @@ public class OfflineNewsListFragment extends BaseFragment {
     FilterModel mFilterModel;
     Activity mActivity;
 
+
+    Realm realm;
+    private Paint p = new Paint();
 
     public static OfflineNewsListFragment newInstance(int instance) {
         Bundle args = new Bundle();
@@ -194,8 +208,11 @@ public class OfflineNewsListFragment extends BaseFragment {
             initialization();
             arrayListArticlesModel = new ArrayList<>();
 
+            realm = Realm.getInstance(App.getRealmConfiguration());
+
             setStaticData(true);
             setSendDataAnalytics();
+            initSwipe();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -286,7 +303,6 @@ public class OfflineNewsListFragment extends BaseFragment {
             });
 
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -299,8 +315,6 @@ public class OfflineNewsListFragment extends BaseFragment {
 
             App.showLog("=======setStaticData===");
 
-            Realm realm;
-            realm = Realm.getInstance(App.getRealmConfiguration());
 
             arrayListArticlesModel = App.fetchArticlesModelList(realm);
 
@@ -332,6 +346,277 @@ public class OfflineNewsListFragment extends BaseFragment {
     }
 
 
+    Dialog dialogRemoveFromNews;
+    private void initSwipe()
+    {
+        try{
+            SwipeHelper swipeHelper = new SwipeHelper(getActivity(), recyclerView) {
+                @Override
+                public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                    underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            " Delete ",
+                            0,
+                            Color.parseColor("#6e8bad"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(final int pos) {
+                                    // TODO: onDelete
+
+                                    App.showLog("=Delete====pos=="+pos);
+
+                                    if(dataListAdapter !=null)
+                                    {
+                                        if(dialogRemoveFromNews !=null && dialogRemoveFromNews.isShowing())
+                                        {
+                                            dialogRemoveFromNews.dismiss();
+                                        }
+
+                                        dialogRemoveFromNews = new Dialog(getActivity());
+                                        // Include dialogRemoveFromNews.xml file
+                                        // Include dialogRemoveFromNews.xml file
+                                        dialogRemoveFromNews.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+                                        dialogRemoveFromNews.getWindow().setBackgroundDrawableResource(R.drawable.prograss_bg); //temp removed
+                                        dialogRemoveFromNews.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+                                        dialogRemoveFromNews.setContentView(R.layout.popup_exit);
+                                        dialogRemoveFromNews.setCancelable(false);
+
+                                        // set values for custom dialogRemoveFromNews components - text, image and button
+                                        // set values for custom dialogRemoveFromNews components - text, image and button
+                                        TextView tvExitMessage = (TextView) dialogRemoveFromNews.findViewById(R.id.tvMessage);
+                                        TextView tvCancel = (TextView) dialogRemoveFromNews.findViewById(R.id.tvCancel);
+                                        TextView tvOK = (TextView) dialogRemoveFromNews.findViewById(R.id.tvOk);
+
+                                        String strAlertMessage = "Are you sure you want to delete this news?";
+                                        String strYes = "DELETE";
+                                        String strNo = "CANCEL";
+
+
+                                        App.showLog("==al-msg====strAlertMessage====" + strAlertMessage);
+                                        App.showLog("==al-0=====strYes===" + strYes);
+                                        App.showLog("==al-1====strNo====" + strNo);
+
+                                        tvExitMessage.setText(strAlertMessage);
+                                        tvCancel.setText(strNo);
+                                        tvOK.setText(strYes);
+
+
+                                        dialogRemoveFromNews.show();
+
+                                        tvCancel.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                dialogRemoveFromNews.dismiss();
+                                                new Handler().postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        dataListAdapter.notifyDataSetChanged();
+                                                    }
+                                                }, 200);
+                                            }
+                                        });
+
+                                        tvOK.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+                                                dialogRemoveFromNews.dismiss();
+
+                                                new Handler().postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        dataListAdapter.removeItem(pos);
+                                                    }
+                                                }, 200);
+
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                    ));
+
+                   /* underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            "Transfer",
+                            0,
+                            Color.parseColor("#FF9502"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(int pos) {
+                                    // TODO: OnTransfer
+                                    App.showLog("=Transfer====pos=="+pos);
+                                }
+                            }
+                    ));*/
+                    underlayButtons.add(new SwipeHelper.UnderlayButton(
+                            " Share ",
+                            0,
+                            Color.parseColor("#0e3f77"),
+                            new SwipeHelper.UnderlayButtonClickListener() {
+                                @Override
+                                public void onClick(int pos) {
+                                    // TODO: OnUnshare
+                                    App.showLog("=share====pos=="+pos);
+
+
+                                    if(arrayListArticlesModel !=null && arrayListArticlesModel.get(pos) !=null)
+                                    {
+                                        String strShareData =
+                                                arrayListArticlesModel.get(pos).title +" \n \n"+
+                                                        arrayListArticlesModel.get(pos).description +" \n \n"+
+                                                        arrayListArticlesModel.get(pos).url ;
+
+                                        Intent sendIntent = new Intent();
+                                        sendIntent.setAction(Intent.ACTION_SEND);
+                                        sendIntent.putExtra(Intent.EXTRA_TEXT, strShareData);
+                                        sendIntent.setType("text/plain");
+                                        startActivity(sendIntent);
+                                    }
+
+                                }
+                            }
+                    ));
+                }
+            };
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void initSwipe2() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                try {
+                    final int position = viewHolder.getAdapterPosition();
+
+                    if (direction == ItemTouchHelper.LEFT && dataListAdapter != null) {
+                        //11
+
+
+                        if(dialogRemoveFromNews !=null && dialogRemoveFromNews.isShowing())
+                        {
+                            dialogRemoveFromNews.dismiss();
+                        }
+                        
+                        dialogRemoveFromNews = new Dialog(getActivity());
+                        // Include dialogRemoveFromNews.xml file
+                        // Include dialogRemoveFromNews.xml file
+                        dialogRemoveFromNews.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+                        dialogRemoveFromNews.getWindow().setBackgroundDrawableResource(R.drawable.prograss_bg); //temp removed
+                        dialogRemoveFromNews.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+                        dialogRemoveFromNews.setContentView(R.layout.popup_exit);
+                        dialogRemoveFromNews.setCancelable(false);
+
+                        // set values for custom dialogRemoveFromNews components - text, image and button
+                        // set values for custom dialogRemoveFromNews components - text, image and button
+                        TextView tvExitMessage = (TextView) dialogRemoveFromNews.findViewById(R.id.tvMessage);
+                        TextView tvCancel = (TextView) dialogRemoveFromNews.findViewById(R.id.tvCancel);
+                        TextView tvOK = (TextView) dialogRemoveFromNews.findViewById(R.id.tvOk);
+
+                        String strAlertMessage = "Are you sure you want to delete this news?";
+                        String strYes = "DELETE";
+                        String strNo = "CANCEL";
+
+
+                        App.showLog("==al-msg====strAlertMessage====" + strAlertMessage);
+                        App.showLog("==al-0=====strYes===" + strYes);
+                        App.showLog("==al-1====strNo====" + strNo);
+
+                        tvExitMessage.setText(strAlertMessage);
+                        tvCancel.setText(strNo);
+                        tvOK.setText(strYes);
+
+
+                        dialogRemoveFromNews.show();
+
+                        tvCancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialogRemoveFromNews.dismiss();
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dataListAdapter.notifyDataSetChanged();
+                                    }
+                                }, 200);
+                            }
+                        });
+
+                        tvOK.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialogRemoveFromNews.dismiss();
+
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dataListAdapter.removeItem(position);
+                                    }
+                                }, 200);
+
+                            }
+                        });
+
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+                Bitmap icon;
+                if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                    View itemView = viewHolder.itemView;
+                    float height = (float) itemView.getBottom() - (float) itemView.getTop();
+                    float width = height / 3;
+
+                    if (dX < 0) {
+
+
+                        /*p.setColor(Color.RED);
+                        c.drawRect(background,p);*/
+
+                        RectF background = new RectF((float) itemView.getRight() + dX, (float) itemView.getTop(), (float) itemView.getRight(), (float) itemView.getBottom());
+
+
+                        p.setColor(Color.RED);
+                        p.setStyle(Paint.Style.FILL); //fill the background with blue color
+                        //+ App.convertDpToPixel(5,ActDashboard.this)
+                        c.drawRect(background.left, background.top, background.right, background.bottom, p);
+
+                        p.setColor(Color.WHITE);
+                        p.setTextSize(App.convertDpToPixel(20, getActivity()));
+                        //p.setColor(Color.RED);
+
+                        //c.drawText("Delete", background.centerX(), background.centerY(), p);
+                        c.drawText("      Delete", background.left, background.centerY(), p);
+
+                        //versionViewHolder.tvRowTitle.setTypeface(App.getFont_Regular());
+
+                    }
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+
+
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
         List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
@@ -359,7 +644,7 @@ public class OfflineNewsListFragment extends BaseFragment {
                 versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
                 versionViewHolder.tvTime.setText(mPEArticleModel.author);
 
-                versionViewHolder.tvDetail.setText("#"+i+" "+mPEArticleModel.description);
+                versionViewHolder.tvDetail.setText("#" + i + " " + mPEArticleModel.description);
                 versionViewHolder.tvLink.setText(mPEArticleModel.url);
 
                 if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
@@ -423,7 +708,16 @@ public class OfflineNewsListFragment extends BaseFragment {
 
 
         public void removeItem(int position) {
+            try {
 
+                App.removeFromOfflineNews(realm,mArrListmPEArticleModel.get(position));
+
+                mArrListmPEArticleModel.remove(position);
+                notifyItemRemoved(position);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
 
