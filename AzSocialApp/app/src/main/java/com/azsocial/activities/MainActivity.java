@@ -9,7 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
+import com.azsocial.App;
 import com.azsocial.R;
 import com.azsocial.fragments.BaseFragment;
 import com.azsocial.fragments.FavouriteNewsListFragment;
@@ -23,6 +25,14 @@ import com.azsocial.fragments.ShareFragment;
 import com.azsocial.utils.FragmentHistory;
 import com.azsocial.utils.Utils;
 import com.azsocial.views.FragNavController;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 import butterknife.BindArray;
 import butterknife.BindView;
@@ -30,6 +40,8 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends BaseActivity implements BaseFragment.FragmentNavigation, FragNavController.TransactionListener, FragNavController.RootFragmentListener {
 
+    String TAG = "MainActivity";
+    boolean isClickEnable = false;
 
     @BindView(R.id.content_frame)
     FrameLayout contentFrame;
@@ -55,64 +67,80 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
 
     private FragmentHistory fragmentHistory;
 
+    //for the video ads
+    private RewardedVideoAd mRewardedVideoAd;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        try {
+            setContentView(R.layout.activity_main);
 
 
-        ButterKnife.bind(this);
+            ButterKnife.bind(this);
 
 
-        initToolbar();
+            initToolbar();
 
-        initTab();
+            initTab();
 
-        fragmentHistory = new FragmentHistory();
-
-
-        mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.content_frame)
-                .transactionListener(this)
-                .rootFragmentListener(this, TABS.length)
-                .build();
+            fragmentHistory = new FragmentHistory();
 
 
-        switchTab(0);
-
-        bottomTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-
-                fragmentHistory.push(tab.getPosition());
-
-                switchTab(tab.getPosition());
+            mNavController = FragNavController.newBuilder(savedInstanceState, getSupportFragmentManager(), R.id.content_frame)
+                    .transactionListener(this)
+                    .rootFragmentListener(this, TABS.length)
+                    .build();
 
 
-            }
+            switchTab(0);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
+            bottomTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
 
-            }
+                    fragmentHistory.push(tab.getPosition());
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-                mNavController.clearStack();
-
-                switchTab(tab.getPosition());
+                    switchTab(tab.getPosition());
 
 
-            }
-        });
+                }
 
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                    mNavController.clearStack();
+
+                    switchTab(tab.getPosition());
+
+
+                }
+            });
+
+            RelativeLayout rlAds = findViewById(R.id.rlAds);
+            App.setDisplayBanner(rlAds,MainActivity.this);
+
+
+           /* AdView mAdView = findViewById(R.id.adViewTop);
+            App.loadAdsBanner(mAdView);*/
+
+            setupAds();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
+
 
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-
-
     }
 
     private void initTab() {
@@ -299,5 +327,84 @@ public class MainActivity extends BaseActivity implements BaseFragment.FragmentN
 
     public void updateToolbarTitle(String title) {
         getSupportActionBar().setTitle(title);
+    }
+
+
+
+    private void setupAds()
+    {
+        try{
+            // Initialize the Mobile Ads SDK.
+            //MobileAds.initialize(this, App.APP_ID);
+
+            mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+            mRewardedVideoAd.setRewardedVideoAdListener(new RewardedVideoAdListener() {
+                @Override
+                public void onRewardedVideoAdLoaded() {
+                   App.showLog(TAG, "====onRewardedVideoAdLoaded====");
+                    if (isClickEnable == false) {
+                        isClickEnable = true;
+                        showRewardedVideo();
+                    }
+
+                    loadRewardedVideoAd();
+
+
+                }
+
+                @Override
+                public void onRewardedVideoAdOpened() {
+                   App.showLog(TAG, "====onRewardedVideoAdOpened====");
+                }
+
+                @Override
+                public void onRewardedVideoStarted() {
+                   App.showLog(TAG, "====onRewardedVideoStarted====");
+                }
+
+                @Override
+                public void onRewardedVideoAdClosed() {
+                   App.showLog(TAG, "====onRewardedVideoAdClosed====");
+                }
+
+                @Override
+                public void onRewarded(RewardItem rewardItem) {
+                   App.showLog(TAG, "====onRewarded====");
+                }
+
+                @Override
+                public void onRewardedVideoAdLeftApplication() {
+                   App.showLog(TAG, "====onRewardedVideoAdLeftApplication====");
+                }
+
+                @Override
+                public void onRewardedVideoAdFailedToLoad(int i) {
+                   App.showLog(TAG, "====onRewardedVideoAdFailedToLoad====");
+
+                }
+            });
+
+            loadRewardedVideoAd();
+            
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void loadRewardedVideoAd() {
+        if (mRewardedVideoAd !=null && !mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.loadAd(App.ADS_APP_rwid_1, new AdRequest.Builder().build());
+        }
+    }
+
+    private void showRewardedVideo() {
+       App.showLog(TAG, "====showRewardedVideo====");
+
+        if (mRewardedVideoAd !=null && mRewardedVideoAd.isLoaded()) {
+            mRewardedVideoAd.show();
+        }
     }
 }

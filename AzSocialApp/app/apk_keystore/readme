@@ -1,0 +1,182 @@
+
+
+
+ AdView mAdView = findViewById(R.id.adViewTop);
+ App.loadAdsBanner(mAdView);
+
+
+
+ <com.google.android.gms.ads.AdView
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/adViewTop"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/m_50dp"
+    android:layout_centerHorizontal="true"
+    android:background="@color/black_50_transparent"
+    ads:adSize="BANNER"
+    ads:adUnitId="ca-app-pub-5194219019183767/2052076832">
+ </com.google.android.gms.ads.AdView>
+
+
+
+
+------------------------
+ 7878
+
+
+App info
+
+App name & store link help_outline
+
+￼
+
+Aznews app
+
+Android
+
+ 
+
+Not linked to Google Play
+
+create
+
+App ID help_outline
+
+ca-app-pub-4346653435295459~2016282424
+
+ Firebase link help_outline
+
+Not linked
+
+
+
+
+Bnr 1
+
+ca-app-pub-4346653435295459/4925872012
+
+
+Bnr2
+ca-app-pub-4346653435295459/6245052143
+
+Bnr3
+ca-app-pub-4346653435295459/4892867059
+
+Bnr4
+ca-app-pub-4346653435295459/7271618384
+
+Bnr5
+ca-app-pub-4346653435295459/9514638345
+
+
+
+Int1
+
+ca-app-pub-4346653435295459/8390119089
+
+
+Rvid1
+
+ca-app-pub-4346653435295459/7276703182
+
+
+
+------------------------
+
+https://newsapi.org/register/success
+
+
+asd.asd@asd.asd
+asdasdasd
+
+
+3f7d2ffdeae948ae9e60ce5fd7d22743
+
+
+test1@test.test
+123456789
+
+515d94b5c06e40db842c0dac3397c955
+
+
+3f7d2ffdeae948ae9e60ce5fd7d22743
+515d94b5c06e40db842c0dac3397c955
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------
+
+D:\Prashant\Github_Demo\azsocial-app\AzSocialApp\app\apk_keystore\keystore_azsocial.jks
+
+file = keystore_azsocial.jks
+password = 123456789
+
+alias = azsocial
+password =
+
+signed apk location  - D:\Prashant\Github_Demo\azsocial-app\AzSocialApp\app\apk_keystore
+
+---------------------------------------------
+
+
+
+
+---------we wer w --------------
+
+#main -
+ca-app-pub-5194219019183767~3956858209
+
+
+#bnr
+
+ca-app-pub-5194219019183767/3453816390
+
+ca-app-pub-5194219019183767/3262244705
+
+ca-app-pub-5194219019183767/9444509678
+
+ca-app-pub-5194219019183767/9448379100
+
+ca-app-pub-5194219019183767/9252937987
+
+
+
+#int
+
+ca-app-pub-5194219019183767/2687529633
+
+ca-app-pub-5194219019183767/2882970757
+
+
+
+#rvid
+
+ca-app-pub-5194219019183767/6243631263
+
+ca-app-pub-5194219019183767/8678222914
+
+

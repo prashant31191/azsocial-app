@@ -138,6 +138,17 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/m_divider_1dp"
-        android:layout_below="@+id/cardlist_item"
+        android:layout_below="@+id/cvItem"
         android:background="@color/clr_divider" />
+
+
+    <RelativeLayout
+        android:id="@+id/rlAds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_below="@+id/cvItem"
+        >
+
+    </RelativeLayout>
 </RelativeLayout>

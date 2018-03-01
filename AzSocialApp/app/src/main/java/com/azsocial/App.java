@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,11 @@ import com.azsocial.utils.SharePrefrences;
 import com.cjj.MaterialRefreshLayout;
 import com.crashlytics.android.Crashlytics;
 import com.flurry.android.FlurryAgent;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,15 +69,56 @@ public class App extends Application {
 
     // fullscreen
     public static boolean blnFullscreenActvitity = false;
+
+
+
+    public static String ADS_APP_MAIN_ACC_ID = "ca-app-pub-5194219019183767~3956858209";
+
+    public static String ADS_APP_bnr_1 = "ca-app-pub-5194219019183767/3453816390";
+    public static String ADS_APP_bnr_2 = "ca-app-pub-5194219019183767/3262244705";
+    public static String ADS_APP_bnr_3 = "ca-app-pub-5194219019183767/9444509678";
+    public static String ADS_APP_bnr_4 = "ca-app-pub-5194219019183767/9448379100";
+    public static String ADS_APP_bnr_5 = "ca-app-pub-5194219019183767/9252937987";
+
+    public static String ADS_APP_int_1 = "ca-app-pub-5194219019183767/2687529633";
+    public static String ADS_APP_int_2 = "ca-app-pub-5194219019183767/2882970757";
+
+    public static String ADS_APP_rwid_1 = "ca-app-pub-5194219019183767/6243631263";
+    public static String ADS_APP_rwid_2 = "ca-app-pub-5194219019183767/8678222914";
+
+
+
+
+
+    // runing
+    /*public static String ADS_APP_MAIN_ACC_ID = "ca-app-pub-5194219019183767~4506849787";
+    public static String ADS_APP_bnr_1 = "ca-app-pub-5194219019183767/2052076832";
+*/
+
+
+
+/*
+//Live - 7878
+    public static String ADS_APP_MAIN_ACC_ID = "ca-app-pub-4346653435295459~2016282424";
+    public static String ADS_APP_bnr_1 = "ca-app-pub-4346653435295459/4925872012";
+
+//Testing - we wer
+ public static String ADS_APP_MAIN_ACC_ID = "ca-app-pub-5194219019183767~4506849787";
+    public static String ADS_APP_bnr_1 = "ca-app-pub-5194219019183767/2052076832";
+
+*/
+
+
+
     public static String FlurryApiKey = "JYQHHN34N2H6P6KR48RD";
-    public static String PREF_NAME = "alldemo_app";
-    public static String DB_NAME = "alldemo.db";
-   /* public static String DB_PATH = "/data/data/" + "com.alldemo" + "/databases/";*/
+    public static String PREF_NAME = "azsocial_app";
+    public static String DB_NAME = "azsocial.db";
+   /* public static String DB_PATH = "/data/data/" + "com.azsocial" + "/databases/";*/
 
     // app folder name
-    public static String APP_FOLDERNAME = ".alldemo";
+    public static String APP_FOLDERNAME = ".azsocial";
     public static String strPrevTime = "";
-    public static String strNewsApiKey = "462f5f3ede2841408e9ef575919befe5";
+    public static String strNewsApiKey = App.getNewsApiKey();
 
     //for the realm database encryption and decryption key
     public static String RealmEncryptionKey = "f263575e7b00a977a8e915feb9bfb2f992b2b8f11eaaaaaaa46523132131689465413132132165469487987987643545465464abbbbbccdddffff111222333";
@@ -92,6 +140,7 @@ public class App extends Application {
             MultiDex.install(this);
             mContext = getApplicationContext();
             sharePrefrences = new SharePrefrences(App.this);
+            MobileAds.initialize(this, App.ADS_APP_MAIN_ACC_ID);
 
             Realm.init(this);
             Fabric.with(this, new Crashlytics());
@@ -125,6 +174,69 @@ public class App extends Application {
 
 
     // FOR THE DATABASE
+
+    public static String getNewsApiKey()
+    {
+        String strKey[] =
+                {
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
+                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "515d94b5c06e40db842c0dac3397c955",
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
+                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "515d94b5c06e40db842c0dac3397c955",
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
+                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "515d94b5c06e40db842c0dac3397c955",
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
+                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "515d94b5c06e40db842c0dac3397c955"
+                };
+
+
+        return  getRandomFromStringArr(strKey);
+
+    }
+
+    public static String getRandomBannerId()
+    {
+        String strArr[] =
+                {
+                        App.ADS_APP_bnr_1,
+                        App.ADS_APP_bnr_2,
+                        App.ADS_APP_bnr_3,
+                        App.ADS_APP_bnr_4,
+                        App.ADS_APP_bnr_5,
+
+
+                        App.ADS_APP_bnr_1,
+                        App.ADS_APP_bnr_2,
+                        App.ADS_APP_bnr_3,
+                        App.ADS_APP_bnr_4,
+                        App.ADS_APP_bnr_5,
+
+                        App.ADS_APP_bnr_1,
+                        App.ADS_APP_bnr_2,
+                        App.ADS_APP_bnr_3,
+                        App.ADS_APP_bnr_4,
+                        App.ADS_APP_bnr_5
+
+                };
+
+
+        //return App.ADS_APP_bnr_1;
+        return getRandomFromStringArr(strArr);
+
+    }
+
+
+
+    public static String getRandomFromStringArr(String[] strArr)
+    {
+        String strRandom = strArr[new Random().nextInt(strArr.length)];
+        return  strRandom;
+    }
+
 
 
     public static RealmConfiguration getRealmConfiguration() {
@@ -811,4 +923,130 @@ public class App extends Application {
         }
     }
 
+
+
+    // for the ads banner loading
+    public static void loadAdsBanner(AdView mAdView)
+    {
+        try{
+
+            String testDeviceId = "777FA88B7778C3830777A58A1777F777";
+            AdRequest adRequest = new AdRequest.Builder()
+                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                    .addTestDevice(testDeviceId)
+
+                    .build();
+          /*  mAdView.setAdSize(AdSize.BANNER);
+            mAdView.setAdUnitId(App.getAdsBannerUnitId());
+*/
+
+          //AdRequest.Builder.addTestDevice("C93FA88BA058C383097DA58A1211F595");
+
+            mAdView.loadAd(adRequest);
+
+            mAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    // Code to be executed when an ad finishes loading.
+                    App.showLog("==AdListener=====onAdLoaded=====");
+                }
+
+                @Override
+                public void onAdFailedToLoad(int errorCode) {
+                    // Code to be executed when an ad request fails.
+                    App.showLog("==AdListener=====onAdFailedToLoad====errorCode="+errorCode);
+                }
+
+                @Override
+                public void onAdOpened() {
+                    // Code to be executed when an ad opens an overlay that
+                    // covers the screen.
+                    App.showLog("==AdListener=====onAdOpened=====");
+                }
+
+                @Override
+                public void onAdLeftApplication() {
+                    // Code to be executed when the user has left the app.
+                    App.showLog("==AdListener=====onAdLeftApplication=====");
+                }
+
+                @Override
+                public void onAdClosed() {
+                    // Code to be executed when when the user is about to return
+                    // to the app after tapping on an ad.
+                    App.showLog("==AdListener=====onAdClosed=====");
+                }
+            });
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+    public static void setDisplayBanner(final RelativeLayout rlAds,final Context context)
+    {
+
+
+        //String deviceid = tm.getDeviceId();
+
+      //  rlAds = (RelativeLayout) findViewById(R.id.rlAds);
+        rlAds.setVisibility(View.VISIBLE);
+        AdView mAdView = new AdView(context);
+        mAdView.setAdSize(AdSize.BANNER);
+        mAdView.setAdUnitId(App.getRandomBannerId());
+
+        // Add the AdView to the view hierarchy. The view will have no size
+        // until the ad is loaded.
+        rlAds.addView(mAdView);
+
+        // Create an ad request. Check logcat output for the hashed device ID to
+        // get test ads on a physical device.
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("77788250222518CCDA7DE777504EE777")
+                .build();
+        //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+        //.addTestDevice(deviceid).build();
+
+        // Start loading the ad in the background.
+        mAdView.loadAd(adRequest);
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+                Log.i("Ads", "onAdLoaded");
+            }
+
+            @Override
+            public void onAdFailedToLoad(int errorCode) {
+                // Code to be executed when an ad request fails.
+                Log.i("Ads", "onAdFailedToLoad");
+               // rlAds.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+                Log.i("Ads", "onAdOpened");
+            }
+
+            @Override
+            public void onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+                Log.i("Ads", "onAdLeftApplication");
+            }
+
+            @Override
+            public void onAdClosed() {
+                // Code to be executed when when the user is about to return
+                // to the app after tapping on an ad.
+                Log.i("Ads", "onAdClosed");
+            }
+        });
+    }
 }

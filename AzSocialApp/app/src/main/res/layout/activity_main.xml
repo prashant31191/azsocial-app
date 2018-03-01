@@ -11,6 +11,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <RelativeLayout
+            android:id="@+id/rlAds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:alpha="0.2"
+            ></RelativeLayout>
+
+
+
+       <!-- <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adViewTop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/m_50dp"
+            android:layout_centerHorizontal="true"
+            android:alpha="0.4"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-4346653435295459/4925872012">
+        </com.google.android.gms.ads.AdView>-->
+
+
+
+
+        <!--ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-5194219019183767/2052076832"-->
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
@@ -27,6 +54,8 @@
             android:layout_height="3dp"
             android:layout_alignBottom="@+id/toolbar"
             android:background="@color/clrTrBlue20" />
+
+
     </RelativeLayout>
 
 

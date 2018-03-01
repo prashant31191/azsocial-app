@@ -111,6 +111,7 @@ dependencies {
 
     // for the analytics
     compile "com.google.android.gms:play-services-analytics:$gPlayServicesBasementVersion"
+    compile "com.google.android.gms:play-services-ads:$gPlayServicesBasementVersion"
 
     // for the token and notification
     compile "com.google.firebase:firebase-messaging:$gPlayServicesBasementVersion"

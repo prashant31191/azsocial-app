@@ -366,6 +366,9 @@ public class OfflineNewsListFragment extends BaseFragment {
 
                                     if(dataListAdapter !=null)
                                     {
+                                        dataListAdapter.removeItem(pos);
+                                    }
+                                    /*{
                                         if(dialogRemoveFromNews !=null && dialogRemoveFromNews.isShowing())
                                         {
                                             dialogRemoveFromNews.dismiss();
@@ -430,7 +433,7 @@ public class OfflineNewsListFragment extends BaseFragment {
 
                                             }
                                         });
-                                    }
+                                    }*/
                                 }
                             }
                     ));
@@ -640,6 +643,18 @@ public class OfflineNewsListFragment extends BaseFragment {
             try {
                 ArticlesModel mPEArticleModel = mArrListmPEArticleModel.get(i);
 
+
+                if (i % 5 == 0) {
+                    if (versionViewHolder.rlAds != null) {
+                        App.setDisplayBanner(versionViewHolder.rlAds, mContext);
+                    }
+                }
+                else{
+                    if (versionViewHolder.rlAds != null) {
+                        versionViewHolder.rlAds.setVisibility(View.GONE);
+                    }
+                }
+
                 versionViewHolder.tvTitle.setText(mPEArticleModel.title);
                 versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
                 versionViewHolder.tvTime.setText(mPEArticleModel.author);
@@ -728,6 +743,7 @@ public class OfflineNewsListFragment extends BaseFragment {
             TextView tvTitle, tvDate, tvTime, tvDetail, tvLink;
             ImageView ivPhoto, ivFavourite;
             RelativeLayout rlMain;
+            RelativeLayout rlAds;
             CardView cvItem;
 
 
@@ -737,6 +753,7 @@ public class OfflineNewsListFragment extends BaseFragment {
 
                 cvItem = (CardView) itemView.findViewById(R.id.cvItem);
                 rlMain = (RelativeLayout) itemView.findViewById(R.id.rlMain);
+                rlAds = (RelativeLayout) itemView.findViewById(R.id.rlAds);
                 tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
                 tvDate = (TextView) itemView.findViewById(R.id.tvDate);
                 tvTime = (TextView) itemView.findViewById(R.id.tvTime);

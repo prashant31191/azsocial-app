@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -28,6 +29,9 @@ import com.azsocial.fragments.sub.NewsDetailFragment;
 import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
@@ -94,8 +98,8 @@ public class SeachHeadLinesFragment extends BaseFragment {
     int page = 1;
     String strSourceId = "bbc-news";
     String strSourceName = "Top headlines";
-    ArticlesModel  mArticlesModel;
-    FilterModel  mFilterModel;
+    ArticlesModel mArticlesModel;
+    FilterModel mFilterModel;
     Activity mActivity;
 
 
@@ -155,20 +159,19 @@ public class SeachHeadLinesFragment extends BaseFragment {
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
                 if (obj instanceof ArticlesModel) {
-                     mArticlesModel = (ArticlesModel) obj;
+                    mArticlesModel = (ArticlesModel) obj;
                 }
                 if (obj instanceof FilterModel) {
                     mFilterModel = (FilterModel) obj;
                 }
-                
-                if(mArticlesModel !=null)
-                {
+
+                if (mArticlesModel != null) {
                     App.showLog("====mArticlesModel====not null==");
 
-                    if(StringUtils.isValidString(mArticlesModel.id) == true)
+                    if (StringUtils.isValidString(mArticlesModel.id) == true)
                         strSourceId = mArticlesModel.id;
 
-                    if(StringUtils.isValidString(mArticlesModel.name) == true)
+                    if (StringUtils.isValidString(mArticlesModel.name) == true)
                         strSourceName = mArticlesModel.name;
                 }
 
@@ -229,9 +232,7 @@ public class SeachHeadLinesFragment extends BaseFragment {
          /*  initialization();
           asyncGetNewsList();*/
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             setSendDataAnalytics();
         }
@@ -269,7 +270,6 @@ public class SeachHeadLinesFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
-
 
 
     @Override
@@ -367,7 +367,6 @@ public class SeachHeadLinesFragment extends BaseFragment {
             });
 
 
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -424,7 +423,6 @@ public class SeachHeadLinesFragment extends BaseFragment {
         }
 
     }
-
 
 
     public class CommonListAdapter extends RecyclerView.Adapter<CommonListAdapter.VersionViewHolder> {
@@ -491,7 +489,7 @@ public class SeachHeadLinesFragment extends BaseFragment {
 
                             filterTopHeadlineList(filterModel);
 
-                           // mFragmentNavigation.pushFragment(SourceFilterFragment.newInstance((Object) filterModel));
+                            // mFragmentNavigation.pushFragment(SourceFilterFragment.newInstance((Object) filterModel));
                         }
 
                     }
@@ -537,18 +535,14 @@ public class SeachHeadLinesFragment extends BaseFragment {
         }
     }
 
-    private void  filterTopHeadlineList(FilterModel filterModel){
-        try{
-            if(mFragmentNavigation !=null)
+    private void filterTopHeadlineList(FilterModel filterModel) {
+        try {
+            if (mFragmentNavigation != null)
                 mFragmentNavigation.pushFragment(SeachHeadLinesFragment.newInstance((Object) filterModel));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-
 
 
     private void asyncGetNewsList() {
@@ -561,9 +555,8 @@ public class SeachHeadLinesFragment extends BaseFragment {
 
             String url = "https://newsapi.org/v2/top-headlines?sources=" + strSourceId + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
 
-            if(mFilterModel !=null  && StringUtils.isValidString(mFilterModel.strFilterValue))
-            {
-                url ="https://newsapi.org/v2/top-headlines?"+ mFilterModel.strFilterKey +"=" + mFilterModel.strFilterValue + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
+            if (mFilterModel != null && StringUtils.isValidString(mFilterModel.strFilterValue)) {
+                url = "https://newsapi.org/v2/top-headlines?" + mFilterModel.strFilterKey + "=" + mFilterModel.strFilterValue + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
             }
 
 
@@ -624,7 +617,7 @@ public class SeachHeadLinesFragment extends BaseFragment {
                                         Realm realm;
                                         realm = Realm.getInstance(App.getRealmConfiguration());
 
-                                        App.insertArticlesModelList(realm,topHeadLinesResponse.arrayListArticlesModel);
+                                        App.insertArticlesModelList(realm, topHeadLinesResponse.arrayListArticlesModel);
 
                                     } else {
                                         materialRefreshLayout.setLoadMore(false);
@@ -689,17 +682,42 @@ public class SeachHeadLinesFragment extends BaseFragment {
         List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
 
+        int AD_TYPE = 1;
+        int CONTENT_TYPE = 2;
+
 
         public DataListAdapter(Context context, List<ArticlesModel> arrList) {
             mArrListmPEArticleModel = arrList;
             mContext = context;
         }
 
+        /*@Override
+        public int getItemViewType(int position) {
+            if (position % 5 == 0)
+                return AD_TYPE;
+            return CONTENT_TYPE;
+        }*/
+
         @Override
-        public VersionViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        public VersionViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+
+
             View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_articles_list, viewGroup, false);
             VersionViewHolder viewHolder = new VersionViewHolder(view);
             return viewHolder;
+
+
+           /* View v = null;
+
+            if (viewType == AD_TYPE) {
+                v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_ads_banner, viewGroup, false);
+            } else
+                v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_articles_list, viewGroup, false);
+
+            VersionViewHolder viewHolder = new VersionViewHolder(v);
+            return viewHolder;*/
+
+
         }
 
 
@@ -708,53 +726,65 @@ public class SeachHeadLinesFragment extends BaseFragment {
             try {
                 ArticlesModel mPEArticleModel = mArrListmPEArticleModel.get(i);
 
-                versionViewHolder.tvTitle.setText(mPEArticleModel.title);
-                versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
-                versionViewHolder.tvTime.setText(mPEArticleModel.author);
-
-                versionViewHolder.tvDetail.setText(mPEArticleModel.description);
-                versionViewHolder.tvLink.setText(mPEArticleModel.url);
-
-                if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
-                    versionViewHolder.ivPhoto.setVisibility(View.VISIBLE);
-
-                    Picasso.with(mContext)
-                            .load(mPEArticleModel.urlToImage)
-                            .placeholder(R.color.clr_divider)
-                            .error(R.color.white)
-                            .fit()
-                            .centerCrop()
-                            .into(versionViewHolder.ivPhoto);
-
-                } else {
-                    versionViewHolder.ivPhoto.setVisibility(View.GONE);
-                }
-                if (mPEArticleModel.name.equalsIgnoreCase("1")) {
-                    versionViewHolder.ivFavourite.setSelected(true);
-                } else {
-                    versionViewHolder.ivFavourite.setSelected(false);
-                }
-
-
-                versionViewHolder.ivFavourite.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (mArrListmPEArticleModel.get(i).name.equalsIgnoreCase("1")) {
-                            mArrListmPEArticleModel.get(i).name = "0";
-                            if (mArrListmPEArticleModel.get(i) != null && mArrListmPEArticleModel.get(i).name != null) {
-
-                            }
-                        } else {
-                            mArrListmPEArticleModel.get(i).name = "1";
-                        }
-
-                        dataListAdapter.notifyDataSetChanged();
+                if (i % 5 == 0) {
+                    if (versionViewHolder.rlAds != null) {
+                        App.setDisplayBanner(versionViewHolder.rlAds, mContext);
                     }
-                });
+                }
+                else{
+                    if (versionViewHolder.rlAds != null) {
+                        versionViewHolder.rlAds.setVisibility(View.GONE);
+                    }
+                }
 
-                versionViewHolder.cvItem.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                {
+                    versionViewHolder.tvTitle.setText(mPEArticleModel.title);
+                    versionViewHolder.tvDate.setText(mPEArticleModel.publishedAt);
+                    versionViewHolder.tvTime.setText(mPEArticleModel.author);
+
+                    versionViewHolder.tvDetail.setText(mPEArticleModel.description);
+                    versionViewHolder.tvLink.setText(mPEArticleModel.url);
+
+                    if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
+                        versionViewHolder.ivPhoto.setVisibility(View.VISIBLE);
+
+                        Picasso.with(mContext)
+                                .load(mPEArticleModel.urlToImage)
+                                .placeholder(R.color.clr_divider)
+                                .error(R.color.white)
+                                .fit()
+                                .centerCrop()
+                                .into(versionViewHolder.ivPhoto);
+
+                    } else {
+                        versionViewHolder.ivPhoto.setVisibility(View.GONE);
+                    }
+                    if (mPEArticleModel.name.equalsIgnoreCase("1")) {
+                        versionViewHolder.ivFavourite.setSelected(true);
+                    } else {
+                        versionViewHolder.ivFavourite.setSelected(false);
+                    }
+
+
+                    versionViewHolder.ivFavourite.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mArrListmPEArticleModel.get(i).name.equalsIgnoreCase("1")) {
+                                mArrListmPEArticleModel.get(i).name = "0";
+                                if (mArrListmPEArticleModel.get(i) != null && mArrListmPEArticleModel.get(i).name != null) {
+
+                                }
+                            } else {
+                                mArrListmPEArticleModel.get(i).name = "1";
+                            }
+
+                            dataListAdapter.notifyDataSetChanged();
+                        }
+                    });
+
+                    versionViewHolder.cvItem.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
                       /*
                         Intent intent= new Intent(mActivity,ActNewsDetail.class);
@@ -762,13 +792,13 @@ public class SeachHeadLinesFragment extends BaseFragment {
                         mActivity.startActivity(intent);
                         */
 
-                        if (mArrListmPEArticleModel.get(i) !=null && mFragmentNavigation != null) {
-                            mFragmentNavigation.pushFragment(NewsDetailFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));
+                            if (mArrListmPEArticleModel.get(i) != null && mFragmentNavigation != null) {
+                                mFragmentNavigation.pushFragment(NewsDetailFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));
+                            }
+
                         }
-
-                    }
-                });
-
+                    });
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -795,10 +825,14 @@ public class SeachHeadLinesFragment extends BaseFragment {
             RelativeLayout rlMain;
             CardView cvItem;
 
+            RelativeLayout rlAds;
+
 
             public VersionViewHolder(View itemView) {
                 super(itemView);
 
+
+                rlAds = (RelativeLayout) itemView.findViewById(R.id.rlAds);
 
                 cvItem = (CardView) itemView.findViewById(R.id.cvItem);
                 rlMain = (RelativeLayout) itemView.findViewById(R.id.rlMain);
