@@ -13,15 +13,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -66,6 +76,12 @@ public class OfflineNewsListFragment extends BaseFragment {
 
     String TAG = "OfflineNewsListFragment";
 
+    @BindView(R.id.etSearch)
+    EditText etSearch;
+
+    @BindView(R.id.ivSearch)
+    ImageView ivSearch;
+
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
@@ -75,11 +91,6 @@ public class OfflineNewsListFragment extends BaseFragment {
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    @BindView(R.id.rlFilter)
-    RelativeLayout rlFilter;
-
-    @BindView(R.id.vLine)
-    View vLine;
 
     @BindView(R.id.llNodata)
     LinearLayout llNodata;
@@ -92,12 +103,15 @@ public class OfflineNewsListFragment extends BaseFragment {
     List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
-    int page = 1;
+
+    String strSearchKeyword = "";
+    String strTemp = "";
     String strSourceId = "bbc-news";
     String strSourceName = "Offline news";
     ArticlesModel mArticlesModel;
     FilterModel mFilterModel;
     Activity mActivity;
+    View mView;
 
 
     Realm realm;
@@ -136,11 +150,12 @@ public class OfflineNewsListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mActivity = getActivity();
-        View view = inflater.inflate(R.layout.fragment_search_headline, container, false);
+        if(mView == null)
+            mView = inflater.inflate(R.layout.fragment_search, container, false);
 
         try {
 
-            ButterKnife.bind(this, view);
+            ButterKnife.bind(this, mView);
 
             Bundle args = getArguments();
 
@@ -177,7 +192,7 @@ public class OfflineNewsListFragment extends BaseFragment {
         }
 
 
-        return view;
+        return mView;
     }
 
     @Override
@@ -185,34 +200,27 @@ public class OfflineNewsListFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         try {
-            if (StringUtils.isValidString(strSourceName) == true) {
-                ((MainActivity) getActivity()).updateToolbarTitle((strSourceName));
-            } else {
-                ((MainActivity) getActivity()).updateToolbarTitle(("Offline news"));
+
+            ((MainActivity) getActivity()).updateToolbarTitle(("Offline news"));
+
+
+
+
+            if(arrayListArticlesModel !=null && arrayListArticlesModel.size() > 0)
+            {
+
             }
+            else {
+                initialization();
+                arrayListArticlesModel = new ArrayList<>();
 
-            if (mFilterModel != null && StringUtils.isValidString(mFilterModel.strFilterKey)) {
-                App.showLog("====mFilterModel====not null==");
-                {
-                    ((MainActivity) getActivity()).updateToolbarTitle(("Top headline " + mFilterModel.strFilterKey + "(" + mFilterModel.strFilterValue + ")"));
-                }
+                realm = Realm.getInstance(App.getRealmConfiguration());
+
+                setStaticData(true);
+                setSendDataAnalytics();
+                setSearchViews();
+                initSwipe();
             }
-
-            if (recyclerView != null) {
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                //recyclerView.setHasFixedSize(true);
-            }
-
-            initialization();
-            arrayListArticlesModel = new ArrayList<>();
-
-            realm = Realm.getInstance(App.getRealmConfiguration());
-
-            setStaticData(true);
-            setSendDataAnalytics();
-            initSwipe();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -252,6 +260,76 @@ public class OfflineNewsListFragment extends BaseFragment {
         }
     }
 
+    private void setSearchViews() {
+        try {
+
+            ivSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    strSearchKeyword = etSearch.getText().toString().trim();
+
+                    if (strTemp.equalsIgnoreCase(strSearchKeyword)) {
+                        return;
+                    }
+
+                    if (strSearchKeyword.length() > 0) {
+                        App.hideSoftKeyboardMy(getActivity());
+                        strTemp = strSearchKeyword;
+                        performSearch();
+                    } else {
+                        App.hideSoftKeyboardMy(getActivity());
+                        App.showSnackBar(etSearch, "Please enter search text.");
+
+                        setStaticData(true);
+                    }
+                }
+            });
+
+            etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        ivSearch.performClick();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void performSearch() {
+        try {
+
+            arrayListArticlesModel = new ArrayList<>();
+            arrayListArticlesModel = App.getSearchFromAllOfflineNews(realm, strSearchKeyword,false);
+
+
+
+            if (arrayListArticlesModel != null) {
+                App.showLog("======search data list notify=====");
+                App.showLog("======arrayListArticlesModel===size=="+arrayListArticlesModel.size());
+                dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
+                recyclerView.setAdapter(dataListAdapter);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                dataListAdapter.notifyDataSetChanged();
+
+                if(arrayListArticlesModel.size() < 1)
+                    llNodata.setVisibility(View.VISIBLE);
+                else
+                    llNodata.setVisibility(View.GONE);
+
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -269,8 +347,6 @@ public class OfflineNewsListFragment extends BaseFragment {
         try {
 
             progressBar.setVisibility(View.GONE);
-            rlFilter.setVisibility(View.GONE);
-            vLine.setVisibility(View.GONE);
             App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
 
             materialRefreshLayout.setIsOverLay(true);
@@ -302,6 +378,13 @@ public class OfflineNewsListFragment extends BaseFragment {
                 }
             });
 
+            if (recyclerView != null) {
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                //recyclerView.setHasFixedSize(true);
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -324,9 +407,9 @@ public class OfflineNewsListFragment extends BaseFragment {
                 llNodata.setVisibility(View.GONE);
 
 
-                App.showLog("======set adapter=DataListAdapter==page=" + page);
+                App.showLog("======set adapter=DataListAdapter==");
 
-                if (dataListAdapter == null || page <= 2 || isSetAdapter == true) {
+                if (dataListAdapter == null  || isSetAdapter == true) {
                     dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
                     recyclerView.setAdapter(dataListAdapter);
                     recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -347,9 +430,9 @@ public class OfflineNewsListFragment extends BaseFragment {
 
 
     Dialog dialogRemoveFromNews;
-    private void initSwipe()
-    {
-        try{
+
+    private void initSwipe() {
+        try {
             SwipeHelper swipeHelper = new SwipeHelper(getActivity(), recyclerView) {
                 @Override
                 public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
@@ -362,10 +445,9 @@ public class OfflineNewsListFragment extends BaseFragment {
                                 public void onClick(final int pos) {
                                     // TODO: onDelete
 
-                                    App.showLog("=Delete====pos=="+pos);
+                                    App.showLog("=Delete====pos==" + pos);
 
-                                    if(dataListAdapter !=null)
-                                    {
+                                    if (dataListAdapter != null) {
                                         dataListAdapter.removeItem(pos);
                                     }
                                     /*{
@@ -458,15 +540,14 @@ public class OfflineNewsListFragment extends BaseFragment {
                                 @Override
                                 public void onClick(int pos) {
                                     // TODO: OnUnshare
-                                    App.showLog("=share====pos=="+pos);
+                                    App.showLog("=share====pos==" + pos);
 
 
-                                    if(arrayListArticlesModel !=null && arrayListArticlesModel.get(pos) !=null)
-                                    {
+                                    if (arrayListArticlesModel != null && arrayListArticlesModel.get(pos) != null) {
                                         String strShareData =
-                                                arrayListArticlesModel.get(pos).title +" \n \n"+
-                                                        arrayListArticlesModel.get(pos).description +" \n \n"+
-                                                        arrayListArticlesModel.get(pos).url ;
+                                                arrayListArticlesModel.get(pos).title + " \n \n" +
+                                                        arrayListArticlesModel.get(pos).description + " \n \n" +
+                                                        arrayListArticlesModel.get(pos).url;
 
                                         Intent sendIntent = new Intent();
                                         sendIntent.setAction(Intent.ACTION_SEND);
@@ -480,9 +561,7 @@ public class OfflineNewsListFragment extends BaseFragment {
                     ));
                 }
             };
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -504,11 +583,10 @@ public class OfflineNewsListFragment extends BaseFragment {
                         //11
 
 
-                        if(dialogRemoveFromNews !=null && dialogRemoveFromNews.isShowing())
-                        {
+                        if (dialogRemoveFromNews != null && dialogRemoveFromNews.isShowing()) {
                             dialogRemoveFromNews.dismiss();
                         }
-                        
+
                         dialogRemoveFromNews = new Dialog(getActivity());
                         // Include dialogRemoveFromNews.xml file
                         // Include dialogRemoveFromNews.xml file
@@ -619,7 +697,6 @@ public class OfflineNewsListFragment extends BaseFragment {
     }
 
 
-
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
         List<ArticlesModel> mArrListmPEArticleModel;
         Context mContext;
@@ -648,8 +725,7 @@ public class OfflineNewsListFragment extends BaseFragment {
                     if (versionViewHolder.rlAds != null) {
                         App.setDisplayBanner(versionViewHolder.rlAds, mContext);
                     }
-                }
-                else{
+                } else {
                     if (versionViewHolder.rlAds != null) {
                         versionViewHolder.rlAds.setVisibility(View.GONE);
                     }
@@ -711,10 +787,31 @@ public class OfflineNewsListFragment extends BaseFragment {
                 });
 
 
+                // Set the view to fade in
+                // setFadeAnimation(versionViewHolder.cvItem);
+                setAnimation(versionViewHolder.cvItem, i);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        /**
+         * Here is the key method to apply the animation
+         */
+        // Allows to remember the last item shown on screen
+        private int lastPosition = -1;
+
+        private void setAnimation(View viewToAnimate, int position) {
+            // If the bound view wasn't previously displayed on screen, it's animated
+            if (position > lastPosition) {
+                Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_up);
+                viewToAnimate.startAnimation(animation);
+                lastPosition = position;
+            }
+        }
+
+
 
         @Override
         public int getItemCount() {
@@ -725,7 +822,7 @@ public class OfflineNewsListFragment extends BaseFragment {
         public void removeItem(int position) {
             try {
 
-                App.removeFromOfflineNews(realm,mArrListmPEArticleModel.get(position));
+                App.removeFromOfflineNews(realm, mArrListmPEArticleModel.get(position));
 
                 mArrListmPEArticleModel.remove(position);
                 notifyItemRemoved(position);

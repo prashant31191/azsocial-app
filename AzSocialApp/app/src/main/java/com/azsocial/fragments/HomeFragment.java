@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -572,10 +573,18 @@ public class HomeFragment extends BaseFragment {
                     }
                 });
 
-
+                setFadeAnimation(versionViewHolder.cvItem);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        int FADE_DURATION = 300;
+
+        private void setFadeAnimation(View view) {
+            AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+            anim.setDuration(FADE_DURATION);
+            view.startAnimation(anim);
         }
 
         @Override

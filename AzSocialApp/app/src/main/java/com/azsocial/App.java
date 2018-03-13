@@ -54,6 +54,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.fabric.sdk.android.Fabric;
+import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
@@ -786,6 +787,9 @@ public class App extends Application {
             App.showLog("========fetchArticlesModelList=====");
 
             RealmResults<ArticlesModel> resultsList = realm.where(ArticlesModel.class).findAll();
+
+            // RealmResults<YourModel> results = yourList.where().findAllSorted("date", Sort.Desending);
+
             App.showLog("===arrDLocationModel==" + resultsList);
             List<ArticlesModel> listArticlesModel = resultsList;
             listArticlesModel = new ArrayList<ArticlesModel>(listArticlesModel);
@@ -894,6 +898,55 @@ public class App extends Application {
         }
     }
 
+    public static List<ArticlesModel> getSearchFromAllOfflineNews(Realm realm,String keyword,boolean isFavourite) {
+        try {
+            App.showLog("========getDataWallpaper=====");
+            List<ArticlesModel> arrListArticlesModel = new ArrayList<>();
+            RealmResults<ArticlesModel> arrDLocationModel ;
+            if(isFavourite  == true)
+            {
+
+                arrDLocationModel = realm.where(ArticlesModel.class)
+                        .beginGroup()
+                        .equalTo("favourite", "1")
+                        .contains("title", keyword, Case.INSENSITIVE)
+                        .or()
+                        .contains("description", keyword)
+                        .endGroup()
+                        .findAll();
+
+                App.showLog("===arrDLocationModel====isFavourite==" + arrDLocationModel);
+            }
+            else {
+                arrDLocationModel = realm.where(ArticlesModel.class)
+                        .beginGroup()
+                        .contains("title", keyword, Case.INSENSITIVE)
+                        .or()
+                        .contains("description", keyword)
+                        .endGroup()
+                        .findAll();
+
+                App.showLog("===arrDLocationModel====isOffline==" + arrDLocationModel);
+            }
+
+            List<ArticlesModel> gsonResponseWallpaperList = arrDLocationModel;
+            arrListArticlesModel = new ArrayList<ArticlesModel>(gsonResponseWallpaperList);
+
+            /*for (int k = 0; k < arrListArticlesModel.size(); k++) {
+                App.showLog(k + "===ArticlesModel=title=" + arrListArticlesModel.get(k).title);
+                App.showLog(k + "===ArticlesModel=description=" + arrListArticlesModel.get(k).description);
+                App.showLog(k + "===ArticlesModel=favourite=" + arrListArticlesModel.get(k).favourite);
+            }*/
+
+            return  arrListArticlesModel;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<ArticlesModel> getAllFavouriteOfflineNews(Realm realm) {
         try {
             App.showLog("========getDataWallpaper=====");
@@ -908,11 +961,11 @@ public class App extends Application {
             List<ArticlesModel> gsonResponseWallpaperList = arrDLocationModel;
             arrListArticlesModel = new ArrayList<ArticlesModel>(gsonResponseWallpaperList);
 
-            for (int k = 0; k < arrListArticlesModel.size(); k++) {
+           /* for (int k = 0; k < arrListArticlesModel.size(); k++) {
                 App.showLog(k + "===ArticlesModel=title=" + arrListArticlesModel.get(k).title);
                 App.showLog(k + "===ArticlesModel=description=" + arrListArticlesModel.get(k).description);
                 App.showLog(k + "===ArticlesModel=favourite=" + arrListArticlesModel.get(k).favourite);
-            }
+            }*/
 
             return  arrListArticlesModel;
 

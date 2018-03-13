@@ -28,6 +28,8 @@
     </string>
     <string name="strNetError">No internet connection</string>
 
+    <string name="menu_item_delete">Delete all</string>
+
 
 
     <array name="str_arr_country_code">

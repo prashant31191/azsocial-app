@@ -10,9 +10,12 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -46,20 +49,21 @@ public class FavouriteNewsListFragment extends BaseFragment {
 
     String TAG = "FavouriteNewsListFragment";
 
+    @BindView(R.id.etSearch)
+    EditText etSearch;
+
+    @BindView(R.id.ivSearch)
+    ImageView ivSearch;
+
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+
 
     @BindView(R.id.materialRefreshLayout)
     MaterialRefreshLayout materialRefreshLayout;
 
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-
-    @BindView(R.id.rlFilter)
-    RelativeLayout rlFilter;
-
-    @BindView(R.id.vLine)
-    View vLine;
 
     @BindView(R.id.llNodata)
     LinearLayout llNodata;
@@ -73,11 +77,14 @@ public class FavouriteNewsListFragment extends BaseFragment {
 
 
     int page = 1;
+    String strSearchKeyword = "";
+    String strTemp = "";
     String strSourceId = "bbc-news";
     String strSourceName = "Favourite news";
     ArticlesModel mArticlesModel;
     FilterModel mFilterModel;
     Activity mActivity;
+    View mView;
 
     Realm realm;
 
@@ -115,11 +122,13 @@ public class FavouriteNewsListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mActivity = getActivity();
-        View view = inflater.inflate(R.layout.fragment_search_headline, container, false);
+        if(mView == null)
+            mView = inflater.inflate(R.layout.fragment_search, container, false);
+
 
         try {
 
-            ButterKnife.bind(this, view);
+            ButterKnife.bind(this, mView);
 
             Bundle args = getArguments();
 
@@ -156,7 +165,7 @@ public class FavouriteNewsListFragment extends BaseFragment {
         }
 
 
-        return view;
+        return mView;
     }
 
     @Override
@@ -164,38 +173,112 @@ public class FavouriteNewsListFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         try {
-            if (StringUtils.isValidString(strSourceName) == true) {
-                ((MainActivity) getActivity()).updateToolbarTitle((strSourceName));
-            } else {
-                ((MainActivity) getActivity()).updateToolbarTitle(("Favourite news"));
+
+            ((MainActivity) getActivity()).updateToolbarTitle(("Favourite news"));
+
+
+
+            if(arrayListArticlesModel !=null && arrayListArticlesModel.size() > 0)
+            {
+
+            }
+            else {
+                initialization();
+                arrayListArticlesModel = new ArrayList<>();
+
+                realm = Realm.getInstance(App.getRealmConfiguration());
+
+                setStaticData(true);
+                setSendDataAnalytics();
+                setSearchViews();
+                initSwipe();
             }
 
-            if (mFilterModel != null && StringUtils.isValidString(mFilterModel.strFilterKey)) {
-                App.showLog("====mFilterModel====not null==");
-                {
-                    ((MainActivity) getActivity()).updateToolbarTitle(("Top headline " + mFilterModel.strFilterKey + "(" + mFilterModel.strFilterValue + ")"));
-                }
-            }
-
-            if (recyclerView != null) {
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
-                //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                //recyclerView.setHasFixedSize(true);
-            }
-
-            initialization();
+            /*initialization();
             arrayListArticlesModel = new ArrayList<>();
 
             setStaticData(true);
             setSendDataAnalytics();
 
-            initSwipe();
+            initSwipe();*/
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
+
+    private void setSearchViews() {
+        try {
+
+            ivSearch.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    strSearchKeyword = etSearch.getText().toString().trim();
+
+                    if (strTemp.equalsIgnoreCase(strSearchKeyword)) {
+                        return;
+                    }
+
+                    if (strSearchKeyword.length() > 0) {
+                        App.hideSoftKeyboardMy(getActivity());
+                        strTemp = strSearchKeyword;
+                        performSearch();
+                    } else {
+                        App.hideSoftKeyboardMy(getActivity());
+                        App.showSnackBar(etSearch, "Please enter search text.");
+
+                        setStaticData(true);
+                    }
+                }
+            });
+
+            etSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        ivSearch.performClick();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void performSearch() {
+        try {
+
+            arrayListArticlesModel = new ArrayList<>();
+            arrayListArticlesModel = App.getSearchFromAllOfflineNews(realm, strSearchKeyword,true);
+
+
+
+            if (arrayListArticlesModel != null) {
+                App.showLog("======search data list notify=====");
+                App.showLog("======arrayListArticlesModel===size=="+arrayListArticlesModel.size());
+                dataListAdapter = new DataListAdapter(mActivity, arrayListArticlesModel);
+                recyclerView.setAdapter(dataListAdapter);
+                recyclerView.setItemAnimator(new DefaultItemAnimator());
+                dataListAdapter.notifyDataSetChanged();
+
+                if(arrayListArticlesModel.size() < 1)
+                    llNodata.setVisibility(View.VISIBLE);
+                else
+                    llNodata.setVisibility(View.GONE);
+
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void initSwipe()
     {
@@ -320,9 +403,15 @@ public class FavouriteNewsListFragment extends BaseFragment {
         try {
 
             progressBar.setVisibility(View.GONE);
-            rlFilter.setVisibility(View.GONE);
-            vLine.setVisibility(View.GONE);
             App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
+
+
+            if (recyclerView != null) {
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                //GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+                recyclerView.setLayoutManager(linearLayoutManager);
+                //recyclerView.setHasFixedSize(true);
+            }
 
             materialRefreshLayout.setIsOverLay(true);
             materialRefreshLayout.setWaveShow(true);
@@ -366,10 +455,6 @@ public class FavouriteNewsListFragment extends BaseFragment {
 
 
             App.showLog("=======setStaticData===");
-
-
-            realm = Realm.getInstance(App.getRealmConfiguration());
-
             arrayListArticlesModel = App.getAllFavouriteOfflineNews(realm);
 
 

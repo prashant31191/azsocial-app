@@ -118,6 +118,9 @@ dependencies {
 
     // for the google ads
     compile "com.google.android.gms:play-services-ads:$gPlayServicesBasementVersion"
+
+    // multiselected items
+    //compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
 }
 
 // Add to the bottom of the file
