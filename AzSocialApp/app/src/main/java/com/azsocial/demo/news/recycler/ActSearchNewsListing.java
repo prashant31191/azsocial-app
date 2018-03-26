@@ -22,8 +22,8 @@ import android.widget.TextView;
 
 import com.azsocial.App;
 import com.azsocial.R;
-import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
-import com.azsocial.demo.news.recycler.newsapi.NewsHeadlinesResponse;
+import com.azsocial.api.model.ArticlesModel;
+import com.azsocial.api.model.NewsHeadlinesResponse;
 import com.azsocial.utils.AppFlags;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;

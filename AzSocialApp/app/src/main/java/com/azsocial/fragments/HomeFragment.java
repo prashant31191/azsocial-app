@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -15,8 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -26,29 +23,33 @@ import android.widget.TextView;
 import com.azsocial.App;
 import com.azsocial.R;
 import com.azsocial.activities.MainActivity;
-import com.azsocial.demo.news.recycler.ActNewsDetail;
-import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
-import com.azsocial.demo.news.recycler.newsapi.FilterModel;
-import com.azsocial.demo.news.recycler.newsapi.NewsChannelsResponse;
+
+import com.azsocial.api.AppApi;
+import com.azsocial.api.model.ArticlesModel;
+import com.azsocial.api.model.FilterModel;
+import com.azsocial.api.model.NewsChannelsResponse;
 import com.azsocial.fragments.sub.SourceFilterFragment;
 import com.azsocial.fragments.sub.TopHeadLinesFragment;
-import com.azsocial.utils.AppFlags;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
-import com.flurry.android.ads.FlurryAdInterstitial;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+/*
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -56,6 +57,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
+*/
 
 public class HomeFragment extends BaseFragment {
 
@@ -180,15 +182,11 @@ public class HomeFragment extends BaseFragment {
             }
 
             setSendDataAnalytics();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
-
-
 
 
     private void setSendDataAnalytics() {
@@ -380,15 +378,76 @@ public class HomeFragment extends BaseFragment {
 
     }
 
+    Call callRetrofit;
 
     private void asyncGetNewsList() {
         try {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
 
-
-            OkHttpClient httpClient = new OkHttpClient();
             String url = "https://newsapi.org/v2/sources?apiKey=" + App.strNewsApiKey + "&page=" + page;
+
+
+            App.setDataHashmap();
+            App.putDataHashmap("apiKey", App.strNewsApiKey);
+            App.putDataHashmap("page", "" + page);
+
+
+            callRetrofit = App.getRetrofitApiService().getSourceList(AppApi.STR_SOURCES, App.getDataHashmap());
+
+
+            callRetrofit.enqueue(new Callback<NewsChannelsResponse>() {
+                @Override
+                public void onResponse(Call<NewsChannelsResponse> call, Response<NewsChannelsResponse> response) {
+                    try {
+                        progressBar.setVisibility(View.GONE);
+                        App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
+
+                        NewsChannelsResponse newsHeadlinesResponse = response.body();
+
+                        if (newsHeadlinesResponse == null) {
+
+                            App.showLog("Test---null response--", "==Something wrong=");
+                            /*ResponseBody responseBody = response.errorBody();
+                            if (responseBody != null) {
+
+                            }*/
+                        } else {
+
+                            App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
+                            if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
+                                //arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
+                                if (page == 1) {
+                                    arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
+                                } else {
+                                    arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
+                                }
+                                page = page + 1;
+                                setStaticData(false);
+                            } else {
+                                materialRefreshLayout.setLoadMore(false);
+                            }
+                        }
+                    } catch (Exception e1) {
+                        progressBar.setVisibility(View.GONE);
+                        App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
+                        e1.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<NewsChannelsResponse> call, Throwable t) {
+                    t.printStackTrace();
+                    App.showLog("error in getting response using async okhttp call");
+
+                    progressBar.setVisibility(View.GONE);
+                    App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
+                }
+            });
+
+
+
+         /*   OkHttpClient httpClient = new OkHttpClient();
+
+
             Request request = new Request.Builder()
                     .url(url)
                     .build();
@@ -446,7 +505,6 @@ public class HomeFragment extends BaseFragment {
                                         materialRefreshLayout.setLoadMore(false);
                                     }
                                 }
-
                             } catch (Exception e1) {
                                 progressBar.setVisibility(View.GONE);
                                 App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
@@ -454,10 +512,10 @@ public class HomeFragment extends BaseFragment {
                             }
                         }
                     });
-
-
                 }
             });
+
+            */
 
 
         } catch (Exception e) {
@@ -682,7 +740,6 @@ public class HomeFragment extends BaseFragment {
                 versionViewHolder.rlMainRect.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
 
 
                         if (mFragmentNavigation != null && mArrList.get(i) != null) {

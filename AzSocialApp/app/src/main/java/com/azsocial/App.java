@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.design.widget.Snackbar;
 import android.support.multidex.MultiDex;
-import android.support.v7.widget.GridLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -26,8 +25,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.azsocial.api.ApiService;
 import com.azsocial.demo.alarm.AlarmManagerBroadcastReceiver;
-import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
+import com.azsocial.api.model.ArticlesModel;
 import com.azsocial.utils.AdsUtils;
 import com.azsocial.utils.SharePrefrences;
 import com.cjj.MaterialRefreshLayout;
@@ -38,6 +38,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -48,8 +50,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +62,11 @@ import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by prashant.chovatiya on 1/12/2018.
@@ -71,7 +80,7 @@ public class App extends Application {
     // fullscreen
     public static boolean blnFullscreenActvitity = false;
 
-
+    public static String strBaseHostUrl = "https://newsapi.org/v2/";
 
     public static String ADS_APP_MAIN_ACC_ID = "ca-app-pub-5194219019183767~3956858209";
 
@@ -683,6 +692,69 @@ public class App extends Application {
             e.printStackTrace();
         }
     }
+
+
+
+
+
+    // APi call
+
+
+    public static OkHttpClient getClient() {
+        //OkHttpClient client =
+
+        return new OkHttpClient.Builder()
+                .connectTimeout(2, TimeUnit.MINUTES)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .build();
+        //return client;
+    }
+
+
+    public static Retrofit getRetrofitBuilder() {
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+
+        return new Retrofit.Builder()
+                .baseUrl(App.strBaseHostUrl)
+                .client(getClient()) // it's optional for adding client
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                //.addConverterFactory(GsonConverterFactory.create())
+                .build();
+    }
+
+    public static ApiService getRetrofitApiService() {
+        return getRetrofitBuilder().create(ApiService.class);
+    }
+
+    public static RequestBody createPartFromString(String value) {
+        return RequestBody.create(MediaType.parse("multipart/form-data"), value);
+    }
+
+    public static RequestBody createPartFromFile(File file) {
+        return RequestBody.create(MediaType.parse("multipart/form-data"), file);
+    }
+
+    static HashMap<String, RequestBody> hashMapData = new HashMap<>();
+    public static void setDataHashmap()
+    {
+        hashMapData = new HashMap<>();
+    }
+    public static HashMap<String, RequestBody> getDataHashmap()
+    {
+        return hashMapData;
+    }
+    public static void putDataHashmap(String key, String value)
+    {
+        //HashMap<String, RequestBody> hashMap = getDataHashmap();
+        RequestBody r_data = App.createPartFromString(value);
+        getDataHashmap().put(key,r_data);
+    }
+
+
 
 
     public static AlarmManagerBroadcastReceiver alarm;

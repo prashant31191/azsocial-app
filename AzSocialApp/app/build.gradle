@@ -119,8 +119,16 @@ dependencies {
     // for the google ads
     compile "com.google.android.gms:play-services-ads:$gPlayServicesBasementVersion"
 
+    // retrofit, gson
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
+
+
     // multiselected items
     //compile 'com.bignerdranch.android:recyclerview-multiselect:0.2'
+
+    compile 'com.koushikdutta.ion:ion:2.+'
+
 }
 
 // Add to the bottom of the file

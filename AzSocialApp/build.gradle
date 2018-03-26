@@ -4,6 +4,7 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven { url "https://jitpack.io" }
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
@@ -31,6 +32,7 @@ allprojects {
         maven {
             url "https://maven.google.com"
         }
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -48,6 +50,7 @@ ext{
     multidexVersion = '1.0.2'
 
     gPlayServicesBasementVersion = '11.8.0'
+    retrofitVersion = "2.3.0"
 }
 
 task clean(type: Delete) {

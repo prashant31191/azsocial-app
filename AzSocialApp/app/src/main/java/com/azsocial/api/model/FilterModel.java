@@ -1,4 +1,4 @@
-package com.azsocial.demo.news.recycler.newsapi;
+package com.azsocial.api.model;
 
 import java.io.Serializable;
 

@@ -1,6 +1,5 @@
 package com.azsocial.demo.alarm;
 
-import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;

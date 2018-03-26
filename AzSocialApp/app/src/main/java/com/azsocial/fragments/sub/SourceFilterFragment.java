@@ -3,12 +3,10 @@ package com.azsocial.fragments.sub;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,16 +20,15 @@ import android.widget.TextView;
 import com.azsocial.App;
 import com.azsocial.R;
 import com.azsocial.activities.MainActivity;
-import com.azsocial.demo.news.recycler.newsapi.ArticlesModel;
-import com.azsocial.demo.news.recycler.newsapi.FilterModel;
-import com.azsocial.demo.news.recycler.newsapi.NewsChannelsResponse;
+import com.azsocial.api.model.ArticlesModel;
+import com.azsocial.api.model.FilterModel;
+import com.azsocial.api.model.NewsChannelsResponse;
 import com.azsocial.fragments.BaseFragment;
 import com.azsocial.utils.StringUtils;
 import com.cjj.MaterialRefreshLayout;
 import com.cjj.MaterialRefreshListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -225,9 +222,6 @@ public class SourceFilterFragment extends BaseFragment {
 
     private void asyncGetNewsList() {
         try {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-
 
             OkHttpClient httpClient = new OkHttpClient();
 
