@@ -13,6 +13,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.Pair;
 import android.view.View;
 
+import com.azsocial.App;
+import com.azsocial.R;
+
 import org.json.JSONArray;
 
 import java.lang.annotation.Retention;
@@ -33,6 +36,8 @@ import java.util.Stack;
  */
 @SuppressWarnings("RestrictedApi")
 public class FragNavController {
+
+    String TAG = "FragNavController";
     //Declare the constants  There is a maximum of 5 tabs, this is per Material Design's Bottom Navigation's design spec.
     public static final int NO_TAB = -1;
     public static final int TAB1 = 0;
@@ -42,6 +47,7 @@ public class FragNavController {
     public static final int TAB5 = 4;
 
     private static final int MAX_NUM_TABS = 5;
+
 
     // Extras used to store savedInstanceState
     private static final String EXTRA_TAG_COUNT = FragNavController.class.getName() + ":EXTRA_TAG_COUNT";
@@ -167,8 +173,15 @@ public class FragNavController {
     public void pushFragment(@Nullable Fragment fragment, @Nullable FragNavTransactionOptions transactionOptions) {
         if (fragment != null && mSelectedTabIndex != NO_TAB) {
             FragmentTransaction ft = createTransactionWithOptions(transactionOptions);
-
             detachCurrentFragment(ft);
+
+
+           /* FragmentTransaction ft = createTransactionWithOptions(transactionOptions);
+            App.showLog(TAG, "=======pushFragment-New Fragment Create=====");
+            ft.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left);
+            detachCurrentFragment(ft);*/
+
+
             ft.add(mContainerId, fragment, generateTag(fragment));
             ft.commit();
 
@@ -306,6 +319,8 @@ public class FragNavController {
             while (fragmentStack.size() > 1) {
                 fragment = mFragmentManager.findFragmentByTag(fragmentStack.pop().getTag());
                 if (fragment != null) {
+                    App.showLog(TAG, "=======clearStack-BackPress=====");
+                    //ft.setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right);
                     ft.remove(fragment);
                 }
             }

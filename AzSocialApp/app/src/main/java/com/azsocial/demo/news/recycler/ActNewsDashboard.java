@@ -122,7 +122,7 @@ public class ActNewsDashboard extends AppCompatActivity {
 
                     Picasso.with(this)
                             .load(articlesModel.urlToImage)
-                            .placeholder(R.color.clr_divider)
+                            .placeholder(R.drawable.ic_az_news_reader)
                             .error(R.color.white)
                             .fit()
                             .centerCrop()

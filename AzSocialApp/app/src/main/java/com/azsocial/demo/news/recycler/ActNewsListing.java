@@ -309,7 +309,7 @@ public class ActNewsListing extends AppCompatActivity {
 
                     Picasso.with(mContext)
                             .load(mPEArticleModel.urlToImage)
-                            .placeholder(R.color.clr_divider)
+                            .placeholder(R.drawable.ic_az_news_reader)
                             .error(R.color.white)
                             .fit()
                             .centerCrop()

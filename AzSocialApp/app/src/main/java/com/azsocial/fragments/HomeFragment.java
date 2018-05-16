@@ -391,7 +391,8 @@ public class HomeFragment extends BaseFragment {
             App.putDataHashmap("page", "" + page);
 
 
-            callRetrofit = App.getRetrofitApiService().getSourceList(AppApi.STR_SOURCES, App.getDataHashmap());
+            //callRetrofit = App.getRetrofitApiService().getSourceList(AppApi.STR_SOURCES, App.getDataHashmap());
+            callRetrofit = App.getRetrofitApiService().getSourceList2(AppApi.STR_SOURCES, App.strNewsApiKey,""+page);
 
 
             callRetrofit.enqueue(new Callback<NewsChannelsResponse>() {

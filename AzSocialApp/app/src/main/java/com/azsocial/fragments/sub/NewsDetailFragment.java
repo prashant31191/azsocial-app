@@ -205,7 +205,7 @@ public class NewsDetailFragment extends BaseFragment {
 
                 Picasso.with(mActivity)
                         .load(mArticlesModel.urlToImage)
-                        .placeholder(R.color.clr_divider)
+                        .placeholder(R.drawable.ic_az_news_reader)
                         .error(R.color.white)
                         .into(ivPhoto);
 
@@ -218,7 +218,7 @@ public class NewsDetailFragment extends BaseFragment {
 
                 Picasso.with(mActivity)
                         .load(mArticlesModel.urlToImage)
-                        .placeholder(R.color.clr_divider)
+                        .placeholder(R.drawable.ic_az_news_reader)
                         .error(R.color.white)
                         .into(ivPhoto2);
 
