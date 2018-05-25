@@ -65,7 +65,8 @@ public class ActAlarm extends BaseActivity {
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");

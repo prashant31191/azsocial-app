@@ -74,7 +74,7 @@ public class ActSearchNewsListing extends AppCompatActivity {
     List<ArticlesModel> arrayListArticlesModel = new ArrayList<>();
 
 
-    String strFrom = "", strData = "", category_id = "",keyword = "bitcoin";
+    String strFrom = "", strData = "", category_id = "", keyword = "bitcoin";
     int page = 1;
 
     @Override
@@ -163,7 +163,7 @@ public class ActSearchNewsListing extends AppCompatActivity {
                     arrayListArticlesModel = new ArrayList<>();
                     page = 1;
 
-                    asyncGetNewsList(""+s);
+                    asyncGetNewsList("" + s);
                 }
 
                 @Override
@@ -185,12 +185,13 @@ public class ActSearchNewsListing extends AppCompatActivity {
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/everything?q="+keyword+"&apiKey=462f5f3ede2841408e9ef575919befe5&page="+page;
+            String url = "https://newsapi.org/v2/everything?q=" + keyword + "&apiKey=462f5f3ede2841408e9ef575919befe5&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
@@ -210,7 +211,7 @@ public class ActSearchNewsListing extends AppCompatActivity {
                 }
 
                 @Override
-                public void onResponse(Call call,final Response response) throws IOException {
+                public void onResponse(Call call, final Response response) throws IOException {
                     final ResponseBody responseBody = response.body();
 
                     runOnUiThread(new Runnable() {
@@ -232,11 +233,9 @@ public class ActSearchNewsListing extends AppCompatActivity {
                                     App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
                                     if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
 
-                                        if(page == 1)
-                                        {
+                                        if (page == 1) {
                                             arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        }
-                                        else {
+                                        } else {
                                             arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
                                         }
                                         page = page + 1;
@@ -245,11 +244,9 @@ public class ActSearchNewsListing extends AppCompatActivity {
                                         Realm realm;
                                         realm = Realm.getInstance(App.getRealmConfiguration());
 
-                                        App.insertArticlesModelList(realm,newsHeadlinesResponse.arrayListArticlesModel);
+                                        App.insertArticlesModelList(realm, newsHeadlinesResponse.arrayListArticlesModel);
 
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         materialRefreshLayout.setLoadMore(false);
                                     }
                                 }
@@ -373,8 +370,8 @@ public class ActSearchNewsListing extends AppCompatActivity {
                 versionViewHolder.rlMain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent= new Intent(ActSearchNewsListing.this,ActNewsDetail.class);
-                        intent.putExtra(AppFlags.tagArticlesModel,mArrListmPEArticleModel.get(i));
+                        Intent intent = new Intent(ActSearchNewsListing.this, ActNewsDetail.class);
+                        intent.putExtra(AppFlags.tagArticlesModel, mArrListmPEArticleModel.get(i));
                         startActivity(intent);
                     }
                 });

@@ -155,12 +155,13 @@ public class ActNewsListing extends AppCompatActivity {
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=462f5f3ede2841408e9ef575919befe5&page="+page;
+            String url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=462f5f3ede2841408e9ef575919befe5&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
@@ -180,7 +181,7 @@ public class ActNewsListing extends AppCompatActivity {
                 }
 
                 @Override
-                public void onResponse(Call call,final Response response) throws IOException {
+                public void onResponse(Call call, final Response response) throws IOException {
                     final ResponseBody responseBody = response.body();
 
                     runOnUiThread(new Runnable() {
@@ -202,11 +203,9 @@ public class ActNewsListing extends AppCompatActivity {
                                     App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
                                     if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
                                         //arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        if(page == 1){
+                                        if (page == 1) {
                                             arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
                                         }
 
@@ -216,11 +215,9 @@ public class ActNewsListing extends AppCompatActivity {
                                         Realm realm;
                                         realm = Realm.getInstance(App.getRealmConfiguration());
 
-                                        App.insertArticlesModelList(realm,newsHeadlinesResponse.arrayListArticlesModel);
+                                        App.insertArticlesModelList(realm, newsHeadlinesResponse.arrayListArticlesModel);
 
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         materialRefreshLayout.setLoadMore(false);
                                     }
                                 }
@@ -344,8 +341,8 @@ public class ActNewsListing extends AppCompatActivity {
                 versionViewHolder.rlMain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent= new Intent(ActNewsListing.this,ActNewsDetail.class);
-                        intent.putExtra(AppFlags.tagArticlesModel,mArrListmPEArticleModel.get(i));
+                        Intent intent = new Intent(ActNewsListing.this, ActNewsDetail.class);
+                        intent.putExtra(AppFlags.tagArticlesModel, mArrListmPEArticleModel.get(i));
                         startActivity(intent);
                     }
                 });

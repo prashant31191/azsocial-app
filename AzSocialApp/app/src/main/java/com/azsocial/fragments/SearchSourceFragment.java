@@ -368,7 +368,8 @@ public class SearchSourceFragment extends BaseFragment {
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
@@ -422,7 +423,7 @@ public class SearchSourceFragment extends BaseFragment {
                                         realm = Realm.getInstance(App.getRealmConfiguration());
 
 
-                                        App.insertArticlesModelList(realm,topHeadLinesResponse.arrayListArticlesModel);
+                                        App.insertArticlesModelList(realm, topHeadLinesResponse.arrayListArticlesModel);
                                     } else {
                                         materialRefreshLayout.setLoadMore(false);
                                     }

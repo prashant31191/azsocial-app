@@ -76,7 +76,7 @@ public class TopHeadLinesFragment extends BaseFragment {
     int page = 1;
     String strSourceId = "bbc-news";
     String strSourceName = "Top headlines";
-    ArticlesModel  mArticlesModel;
+    ArticlesModel mArticlesModel;
 
 
     Activity mActivity;
@@ -132,17 +132,16 @@ public class TopHeadLinesFragment extends BaseFragment {
                     //fragCount = args.getInt(ARGS_INSTANCE);
                 }
                 if (obj instanceof ArticlesModel) {
-                     mArticlesModel = (ArticlesModel) obj;
+                    mArticlesModel = (ArticlesModel) obj;
                 }
-                
-                if(mArticlesModel !=null)
-                {
+
+                if (mArticlesModel != null) {
                     App.showLog("====mArticlesModel====not null==");
 
-                    if(StringUtils.isValidString(mArticlesModel.id) == true)
+                    if (StringUtils.isValidString(mArticlesModel.id) == true)
                         strSourceId = mArticlesModel.id;
 
-                    if(StringUtils.isValidString(mArticlesModel.name) == true)
+                    if (StringUtils.isValidString(mArticlesModel.name) == true)
                         strSourceName = mArticlesModel.name;
                 }
 
@@ -188,9 +187,7 @@ public class TopHeadLinesFragment extends BaseFragment {
           asyncGetNewsList();*/
 
             setSendDataAnalytics();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -226,6 +223,7 @@ public class TopHeadLinesFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -283,14 +281,16 @@ public class TopHeadLinesFragment extends BaseFragment {
             StrictMode.setThreadPolicy(policy);
 
 
-            OkHttpClient httpClient = new OkHttpClient();
+            //OkHttpClient httpClient = new OkHttpClient();
+            //OkHttpClient httpClient = new OkHttpClient();
             //https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=462f5f3ede2841408e9ef575919befe5
             String url = "https://newsapi.org/v2/top-headlines?sources=" + strSourceId + "&apiKey=" + App.strNewsApiKey + "&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
@@ -344,7 +344,7 @@ public class TopHeadLinesFragment extends BaseFragment {
                                         realm = Realm.getInstance(App.getRealmConfiguration());
 
 
-                                        App.insertArticlesModelList(realm,topHeadLinesResponse.arrayListArticlesModel);
+                                        App.insertArticlesModelList(realm, topHeadLinesResponse.arrayListArticlesModel);
 
                                     } else {
                                         materialRefreshLayout.setLoadMore(false);
@@ -482,7 +482,7 @@ public class TopHeadLinesFragment extends BaseFragment {
                         mActivity.startActivity(intent);
                         */
 
-                        if (mArrListmPEArticleModel.get(i) !=null && mFragmentNavigation != null) {
+                        if (mArrListmPEArticleModel.get(i) != null && mFragmentNavigation != null) {
                             mFragmentNavigation.pushFragment(NewsDetailFragment.newInstance((Object) mArrListmPEArticleModel.get(i)));
                         }
 

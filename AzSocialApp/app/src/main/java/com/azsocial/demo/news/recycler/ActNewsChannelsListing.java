@@ -81,9 +81,7 @@ public class ActNewsChannelsListing extends AppCompatActivity {
             asyncGetNewsList();
 
 
-
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -193,12 +191,13 @@ public class ActNewsChannelsListing extends AppCompatActivity {
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/sources?apiKey=462f5f3ede2841408e9ef575919befe5&page="+page;
+            String url = "https://newsapi.org/v2/sources?apiKey=462f5f3ede2841408e9ef575919befe5&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
@@ -218,7 +217,7 @@ public class ActNewsChannelsListing extends AppCompatActivity {
                 }
 
                 @Override
-                public void onResponse(Call call,final Response response) throws IOException {
+                public void onResponse(Call call, final Response response) throws IOException {
                     final ResponseBody responseBody = response.body();
 
                     runOnUiThread(new Runnable() {
@@ -240,18 +239,14 @@ public class ActNewsChannelsListing extends AppCompatActivity {
                                     App.setStopLoadingMaterialRefreshLayout(materialRefreshLayout);
                                     if (newsHeadlinesResponse != null && newsHeadlinesResponse.arrayListArticlesModel != null) {
                                         //arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        if(page == 1){
+                                        if (page == 1) {
                                             arrayListArticlesModel = newsHeadlinesResponse.arrayListArticlesModel;
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             arrayListArticlesModel.addAll(newsHeadlinesResponse.arrayListArticlesModel);
                                         }
                                         page = page + 1;
                                         setStaticData();
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         materialRefreshLayout.setLoadMore(false);
                                     }
                                 }
@@ -333,7 +328,7 @@ public class ActNewsChannelsListing extends AppCompatActivity {
                 versionViewHolder.tvDate.setText(mPEArticleModel.country);
                 versionViewHolder.tvTime.setText(mPEArticleModel.language);
 
-                versionViewHolder.tvDetail.setText(mPEArticleModel.id + "\n "+mPEArticleModel.category);
+                versionViewHolder.tvDetail.setText(mPEArticleModel.id + "\n " + mPEArticleModel.category);
 
                 if (mPEArticleModel.urlToImage != null && mPEArticleModel.urlToImage.length() > 1) {
                     versionViewHolder.ivPhoto.setVisibility(View.VISIBLE);
@@ -375,8 +370,8 @@ public class ActNewsChannelsListing extends AppCompatActivity {
                 versionViewHolder.rlMain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent= new Intent(ActNewsChannelsListing.this,ActNewsDetail.class);
-                        intent.putExtra(AppFlags.tagArticlesModel,mArrListmPEArticleModel.get(i));
+                        Intent intent = new Intent(ActNewsChannelsListing.this, ActNewsDetail.class);
+                        intent.putExtra(AppFlags.tagArticlesModel, mArrListmPEArticleModel.get(i));
                         startActivity(intent);
                     }
                 });

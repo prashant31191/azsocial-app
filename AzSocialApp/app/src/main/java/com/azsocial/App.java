@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,6 +57,13 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import io.fabric.sdk.android.Fabric;
 import io.realm.Case;
@@ -97,9 +105,6 @@ public class App extends Application {
     public static String ADS_APP_rwid_2 = "ca-app-pub-5194219019183767/8678222914";
 
 
-
-
-
     // runing
     /*public static String ADS_APP_MAIN_ACC_ID = "ca-app-pub-5194219019183767~4506849787";
     public static String ADS_APP_bnr_1 = "ca-app-pub-5194219019183767/2052076832";
@@ -119,11 +124,10 @@ public class App extends Application {
 */
 
 
-
     public static String FlurryApiKey = "JYQHHN34N2H6P6KR48RD";
     public static String PREF_NAME = "azsocial_app";
     public static String DB_NAME = "azsocial.db";
-   /* public static String DB_PATH = "/data/data/" + "com.azsocial" + "/databases/";*/
+    /* public static String DB_PATH = "/data/data/" + "com.azsocial" + "/databases/";*/
 
     // app folder name
     public static String APP_FOLDERNAME = ".azsocial";
@@ -185,31 +189,29 @@ public class App extends Application {
 
     // FOR THE DATABASE
 
-    public static String getNewsApiKey()
-    {
+    public static String getNewsApiKey() {
         String strKey[] =
                 {
-                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
-                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743",
+                        "462f5f3ede2841408e9ef575919befe5",
                         "515d94b5c06e40db842c0dac3397c955",
-                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
-                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743",
+                        "462f5f3ede2841408e9ef575919befe5",
                         "515d94b5c06e40db842c0dac3397c955",
-                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
-                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743",
+                        "462f5f3ede2841408e9ef575919befe5",
                         "515d94b5c06e40db842c0dac3397c955",
-                        "3f7d2ffdeae948ae9e60ce5fd7d22743" ,
-                        "462f5f3ede2841408e9ef575919befe5" ,
+                        "3f7d2ffdeae948ae9e60ce5fd7d22743",
+                        "462f5f3ede2841408e9ef575919befe5",
                         "515d94b5c06e40db842c0dac3397c955"
                 };
 
 
-        return  getRandomFromStringArr(strKey);
+        return getRandomFromStringArr(strKey);
 
     }
 
-    public static String getRandomBannerId()
-    {
+    public static String getRandomBannerId() {
         String strArr[] =
                 {
                         App.ADS_APP_bnr_1,
@@ -240,13 +242,10 @@ public class App extends Application {
     }
 
 
-
-    public static String getRandomFromStringArr(String[] strArr)
-    {
+    public static String getRandomFromStringArr(String[] strArr) {
         String strRandom = strArr[new Random().nextInt(strArr.length)];
-        return  strRandom;
+        return strRandom;
     }
-
 
 
     public static RealmConfiguration getRealmConfiguration() {
@@ -694,20 +693,55 @@ public class App extends Application {
     }
 
 
-
-
-
     // APi call
 
 
     public static OkHttpClient getClient() {
-        //OkHttpClient client =
+        try {
+            final TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
 
+                        @Override
+                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                        }
+
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[]{};
+                        }
+                    }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sslContext = null;
+
+            sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+        return new OkHttpClient.Builder()
+                .sslSocketFactory(sslSocketFactory,(X509TrustManager) trustAllCerts[0])
+                .hostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                })
+                .connectTimeout(2, TimeUnit.MINUTES)
+                .readTimeout(2, TimeUnit.MINUTES)
+                .build();
+        } catch (Exception e) {
+            e.printStackTrace();
         return new OkHttpClient.Builder()
                 .connectTimeout(2, TimeUnit.MINUTES)
                 .readTimeout(2, TimeUnit.MINUTES)
                 .build();
-        //return client;
+        }
     }
 
 
@@ -723,6 +757,7 @@ public class App extends Application {
                 .client(getClient()) // it's optional for adding client
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 //.addConverterFactory(GsonConverterFactory.create())
+                //  .client(SelfSigningClientBuilder.getUnsafeOkHttpClient())
                 .build();
     }
 
@@ -739,22 +774,20 @@ public class App extends Application {
     }
 
     static HashMap<String, RequestBody> hashMapData = new HashMap<>();
-    public static void setDataHashmap()
-    {
+
+    public static void setDataHashmap() {
         hashMapData = new HashMap<>();
     }
-    public static HashMap<String, RequestBody> getDataHashmap()
-    {
+
+    public static HashMap<String, RequestBody> getDataHashmap() {
         return hashMapData;
     }
-    public static void putDataHashmap(String key, String value)
-    {
+
+    public static void putDataHashmap(String key, String value) {
         //HashMap<String, RequestBody> hashMap = getDataHashmap();
         RequestBody r_data = App.createPartFromString(value);
-        getDataHashmap().put(key,r_data);
+        getDataHashmap().put(key, r_data);
     }
-
-
 
 
     public static AlarmManagerBroadcastReceiver alarm;
@@ -890,7 +923,7 @@ public class App extends Application {
 
             realm.beginTransaction();
             mArticlesModel.favourite = "1";
-           // ArticlesModel articlesModel = realm.copyToRealm(mArticlesModel);
+            // ArticlesModel articlesModel = realm.copyToRealm(mArticlesModel);
             ArticlesModel articlesModel = realm.copyToRealmOrUpdate(mArticlesModel);
             realm.commitTransaction();
 
@@ -912,7 +945,7 @@ public class App extends Application {
 
             realm.beginTransaction();
             mArticlesModel.favourite = "0";
-           // ArticlesModel articlesModel = realm.copyToRealm(mArticlesModel);
+            // ArticlesModel articlesModel = realm.copyToRealm(mArticlesModel);
             ArticlesModel articlesModel = realm.copyToRealmOrUpdate(mArticlesModel);
             realm.commitTransaction();
 
@@ -970,13 +1003,12 @@ public class App extends Application {
         }
     }
 
-    public static List<ArticlesModel> getSearchFromAllOfflineNews(Realm realm,String keyword,boolean isFavourite) {
+    public static List<ArticlesModel> getSearchFromAllOfflineNews(Realm realm, String keyword, boolean isFavourite) {
         try {
             App.showLog("========getDataWallpaper=====");
             List<ArticlesModel> arrListArticlesModel = new ArrayList<>();
-            RealmResults<ArticlesModel> arrDLocationModel ;
-            if(isFavourite  == true)
-            {
+            RealmResults<ArticlesModel> arrDLocationModel;
+            if (isFavourite == true) {
 
                 arrDLocationModel = realm.where(ArticlesModel.class)
                         .beginGroup()
@@ -988,8 +1020,7 @@ public class App extends Application {
                         .findAll();
 
                 App.showLog("===arrDLocationModel====isFavourite==" + arrDLocationModel);
-            }
-            else {
+            } else {
                 arrDLocationModel = realm.where(ArticlesModel.class)
                         .beginGroup()
                         .contains("title", keyword, Case.INSENSITIVE)
@@ -1010,7 +1041,7 @@ public class App extends Application {
                 App.showLog(k + "===ArticlesModel=favourite=" + arrListArticlesModel.get(k).favourite);
             }*/
 
-            return  arrListArticlesModel;
+            return arrListArticlesModel;
 
 
         } catch (Exception e) {
@@ -1039,7 +1070,7 @@ public class App extends Application {
                 App.showLog(k + "===ArticlesModel=favourite=" + arrListArticlesModel.get(k).favourite);
             }*/
 
-            return  arrListArticlesModel;
+            return arrListArticlesModel;
 
 
         } catch (Exception e) {
@@ -1049,11 +1080,9 @@ public class App extends Application {
     }
 
 
-
     // for the ads banner loading
-    public static void loadAdsBanner(AdView mAdView)
-    {
-        try{
+    public static void loadAdsBanner(AdView mAdView) {
+        try {
 
             String testDeviceId = "777FA88B7778C3830777A58A1777F777";
             AdRequest adRequest = new AdRequest.Builder()
@@ -1065,7 +1094,7 @@ public class App extends Application {
             mAdView.setAdUnitId(App.getAdsBannerUnitId());
 */
 
-          //AdRequest.Builder.addTestDevice("C93FA88BA058C383097DA58A1211F595");
+            //AdRequest.Builder.addTestDevice("C93FA88BA058C383097DA58A1211F595");
 
             mAdView.loadAd(adRequest);
 
@@ -1079,7 +1108,7 @@ public class App extends Application {
                 @Override
                 public void onAdFailedToLoad(int errorCode) {
                     // Code to be executed when an ad request fails.
-                    App.showLog("==AdListener=====onAdFailedToLoad====errorCode="+errorCode);
+                    App.showLog("==AdListener=====onAdFailedToLoad====errorCode=" + errorCode);
                 }
 
                 @Override
@@ -1102,24 +1131,18 @@ public class App extends Application {
                     App.showLog("==AdListener=====onAdClosed=====");
                 }
             });
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-
-
-
-    public static void setDisplayBanner(final RelativeLayout rlAds,final Context context)
-    {
+    public static void setDisplayBanner(final RelativeLayout rlAds, final Context context) {
 
 
         //String deviceid = tm.getDeviceId();
 
-      //  rlAds = (RelativeLayout) findViewById(R.id.rlAds);
+        //  rlAds = (RelativeLayout) findViewById(R.id.rlAds);
         rlAds.setVisibility(View.VISIBLE);
         AdView mAdView = new AdView(context);
         mAdView.setAdSize(AdSize.BANNER);
@@ -1150,7 +1173,7 @@ public class App extends Application {
             public void onAdFailedToLoad(int errorCode) {
                 // Code to be executed when an ad request fails.
                 Log.i("Ads", "onAdFailedToLoad");
-               // rlAds.setVisibility(View.GONE);
+                // rlAds.setVisibility(View.GONE);
             }
 
             @Override

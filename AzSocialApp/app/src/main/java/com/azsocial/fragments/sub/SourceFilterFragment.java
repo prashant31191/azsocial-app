@@ -120,7 +120,7 @@ public class SourceFilterFragment extends BaseFragment {
                 Object obj = (Object) args.getSerializable(ARGS_INSTANCE);
 
                 if (obj instanceof FilterModel) {
-                     mFilterModel = (FilterModel) obj;
+                    mFilterModel = (FilterModel) obj;
                 }
 
             }
@@ -136,18 +136,15 @@ public class SourceFilterFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-       if(mFilterModel !=null)
+        if (mFilterModel != null) {
+            ((MainActivity) getActivity()).updateToolbarTitle(("Filter " + StringUtils.setString(mFilterModel.strFilterKey) + " (" + StringUtils.setString(mFilterModel.strFilterValue) + ")"));
+
+        } else {
+            ((MainActivity) getActivity()).updateToolbarTitle(("Filter source"));
+        }
         {
-            ((MainActivity) getActivity()).updateToolbarTitle(("Filter " + StringUtils.setString(mFilterModel.strFilterKey)  + " ("+ StringUtils.setString(mFilterModel.strFilterValue) + ")"));
 
         }
-        else
-       {
-           ((MainActivity) getActivity()).updateToolbarTitle(("Filter source"));
-       }
-       {
-
-       }
 
         if (recyclerView != null) {
             GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 2);
@@ -225,13 +222,14 @@ public class SourceFilterFragment extends BaseFragment {
 
             OkHttpClient httpClient = new OkHttpClient();
 
-            String url = "https://newsapi.org/v2/sources?apiKey=" + App.strNewsApiKey + "&"+mFilterModel.strFilterKey+"=" + mFilterModel.strFilterValue + "&page=" + page;
+            String url = "https://newsapi.org/v2/sources?apiKey=" + App.strNewsApiKey + "&" + mFilterModel.strFilterKey + "=" + mFilterModel.strFilterValue + "&page=" + page;
 
             Request request = new Request.Builder()
                     .url(url)
                     .build();
 
-            httpClient.newCall(request).enqueue(new Callback() {
+            //httpClient.newCall(request).enqueue(new Callback() {
+            App.getClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     App.showLog("error in getting response using async okhttp call");
@@ -337,7 +335,6 @@ public class SourceFilterFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
-
 
 
     public class DataListAdapter extends RecyclerView.Adapter<DataListAdapter.VersionViewHolder> {
