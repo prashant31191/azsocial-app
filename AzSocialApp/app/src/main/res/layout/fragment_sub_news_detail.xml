@@ -19,7 +19,6 @@
             android:layout_height="match_parent"
             android:background="#3000"
             android:scaleType="fitCenter"
-            android:src="@drawable/splash"
             android:visibility="visible" />
 
         <ImageView
