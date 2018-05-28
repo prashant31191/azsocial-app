@@ -155,7 +155,7 @@ public class ActNewsListing extends AppCompatActivity {
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=462f5f3ede2841408e9ef575919befe5&page=" + page;
+            String url = "https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey="+App.strNewsApiKey+"&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();

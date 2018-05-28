@@ -185,7 +185,7 @@ public class ActSearchNewsListing extends AppCompatActivity {
 
 
             OkHttpClient httpClient = new OkHttpClient();
-            String url = "https://newsapi.org/v2/everything?q=" + keyword + "&apiKey=462f5f3ede2841408e9ef575919befe5&page=" + page;
+            String url = "https://newsapi.org/v2/everything?q=" + keyword + "&apiKey="+App.strNewsApiKey+"&page=" + page;
             Request request = new Request.Builder()
                     .url(url)
                     .build();
